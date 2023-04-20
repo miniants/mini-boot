@@ -1,0 +1,10 @@
+dependencies {
+    implementation 'javax.validation:validation-api'
+    implementation 'com.itextpdf:itextpdf'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+
+    implementation 'org.slf4j:slf4j-api'
+
+    compileOnly 'javax.servlet:javax.servlet-api'
+    compileOnly 'org.springframework:spring-context'
+}

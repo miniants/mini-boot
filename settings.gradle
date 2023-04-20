@@ -1,0 +1,4 @@
+rootProject.name = 'storm-boot'
+include 'storm-boot-toolkit'
+include 'storm-boot-framework'
+
