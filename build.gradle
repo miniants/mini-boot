@@ -1,10 +1,13 @@
 buildscript {
     ext {
-        //统一版本号
+        //核心组件版本
+        springBootVersion = '2.7.6'
+        springCloudVersion = '2021.0.5'
+        springCloudAlibabaVersion = '2021.0.5.0'
+        gradleReleaseVersion = '3.0.2'
+
+        //组件版本
         lomokVersion = '1.18.20'
-        springBootVersion = '2.7.9'
-        springCloudVersion = '2021.0.1'
-        springCloudAlibabaVersion = '2021.1'
         mybatisPlusVersion = '3.5.2'
         mysqlConnectorVersion = '8.0.31'
         hutoolVersion = '5.8.15'
@@ -13,9 +16,6 @@ buildscript {
         disruptorVersion = '3.4.4'
         jtsVersion = '1.18.2'
         springdocVersion = '1.6.8'
-
-        //插件版本号
-        gradleReleaseVersion = '3.0.2'
 
         // 配置 Maven 发布的仓库信息
         myNexusRepoUrl = "http://39.100.225.51:18001/repository/stormwind"
@@ -48,6 +48,7 @@ buildscript {
 //全局配置,包括root和所有子项目都会继承
 allprojects {
     apply plugin: 'java'
+    apply plugin: 'java-library'
     apply plugin: 'maven-publish'
     apply plugin: "net.researchgate.release"
 
@@ -107,13 +108,12 @@ allprojects {
 }
 
 subprojects {
+    apply plugin: 'org.springframework.boot'
     apply plugin: 'io.spring.dependency-management'
-    apply plugin: 'java-library'
 
     dependencies {
         annotationProcessor 'org.projectlombok:lombok' //注释处理器
         api 'org.projectlombok:lombok' //引入lombok
-
         api 'cn.hutool:hutool-all'
 
     }
@@ -144,7 +144,6 @@ subprojects {
 release {
     failOnCommitNeeded = false
     failOnUnversionedFiles = false
-    //researchgate.release.GitAdapter
     scmAdapters = [net.researchgate.release.GitAdapter]
     git{
         requireBranch.set('master')
