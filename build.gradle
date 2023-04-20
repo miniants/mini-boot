@@ -1,7 +1,7 @@
 buildscript {
     ext {
         //核心组件版本
-        springBootVersion = '2.7.6'
+        springBootVersion = '2.6.13'
         springCloudVersion = '2021.0.5'
         springCloudAlibabaVersion = '2021.0.5.0'
         gradleReleaseVersion = '3.0.2'
