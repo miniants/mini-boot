@@ -1,4 +1,6 @@
 rootProject.name = 'storm-boot'
 include 'storm-boot-toolkit'
 include 'storm-boot-framework'
+include 'storm-boot-starters:storm-boot-starters-service'
+findProject(':storm-boot-starters:storm-boot-starters-service')?.name = 'storm-boot-starters-service'
 
