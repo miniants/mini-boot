@@ -3,7 +3,6 @@ dependencies {
 
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-aop'
-    implementation 'org.springdoc:springdoc-openapi-webmvc-core'//swagger文档生成器
 
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     implementation 'org.springframework.integration:spring-integration-redis'
