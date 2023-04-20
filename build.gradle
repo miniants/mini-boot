@@ -80,6 +80,7 @@ allprojects {
         publications {
             myPublish(MavenPublication) {
                 versionMapping {
+                    from components.java
                     usage('java-api') {
                         fromResolutionOf('runtimeClasspath')
                     }
