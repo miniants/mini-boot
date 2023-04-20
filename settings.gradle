@@ -3,4 +3,6 @@ include 'storm-boot-toolkit'
 include 'storm-boot-framework'
 include 'storm-boot-starters:storm-boot-starters-cloud-service'
 findProject(':storm-boot-starters:storm-boot-starters-cloud-service')?.name = 'storm-boot-starters-cloud-service'
+include 'storm-boot-starters:storm-boot-starters-cloud-gateway'
+findProject(':storm-boot-starters:storm-boot-starters-cloud-gateway')?.name = 'storm-boot-starters-cloud-gateway'
 
