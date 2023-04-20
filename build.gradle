@@ -3,8 +3,8 @@ buildscript {
         //核心组件版本
         //spring-boot+spring-cloud+alibaba-cloud版本说明https://github.com/alibaba/spring-cloud-alibaba/wiki/%E7%89%88%E6%9C%AC%E8%AF%B4%E6%98%8E
         springBootVersion = '2.7.9' //文档说2.6.13，脚手架生成2.7.6
-        springCloudVersion = '2021.0.5'
-        springCloudAlibabaVersion = '2021.0.5.0'
+        springCloudVersion = '2021.0.1'
+        springCloudAlibabaVersion = '2021.0.1.0'
         gradleReleaseVersion = '3.0.2'
 
         //组件版本
