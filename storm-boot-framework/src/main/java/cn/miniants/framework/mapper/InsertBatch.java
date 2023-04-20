@@ -5,11 +5,11 @@
  */
 package cn.miniants.framework.mapper;
 
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.core.injector.AbstractMethod;
 import com.baomidou.mybatisplus.core.metadata.TableFieldInfo;
 import com.baomidou.mybatisplus.core.metadata.TableInfo;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.executor.keygen.Jdbc3KeyGenerator;
 import org.apache.ibatis.executor.keygen.KeyGenerator;
 import org.apache.ibatis.executor.keygen.NoKeyGenerator;
@@ -45,7 +45,7 @@ public class InsertBatch extends AbstractMethod {
         String keyColumn = null;
 
         // 表包含主键处理逻辑,如果不包含主键当普通字段处理
-        if (StringUtils.isNotEmpty(tableInfo.getKeyProperty())) {
+        if (StrUtil.isNotEmpty(tableInfo.getKeyProperty())) {
             if (tableInfo.getIdType() == IdType.AUTO) {
                 /** 自增主键 */
                 keyGenerator = new Jdbc3KeyGenerator();
