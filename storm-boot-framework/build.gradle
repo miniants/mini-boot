@@ -1,21 +1,21 @@
 dependencies {
     api project(':storm-boot-toolkit')
 
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.springframework.boot:spring-boot-starter-aop'
-    implementation 'org.springdoc:springdoc-openapi-webmvc-core'//swagger文档生成器
+    api 'org.springframework.boot:spring-boot-starter-web'
+    api 'org.springframework.boot:spring-boot-starter-aop'
+    api 'org.springdoc:springdoc-openapi-webmvc-core'//swagger文档生成器
 
-    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
-    implementation 'org.springframework.integration:spring-integration-redis'
-    implementation 'javax.validation:validation-api'
+    api 'org.springframework.boot:spring-boot-starter-data-redis'
+    api 'org.springframework.integration:spring-integration-redis'
+    api 'javax.validation:validation-api'
 
 
-    implementation 'com.lmax:disruptor'
-    implementation 'com.baomidou:kisso'
-    implementation 'com.mysql:mysql-connector-j'
-    implementation 'com.baomidou:mybatis-plus-boot-starter'
-    implementation 'org.locationtech.jts:jts-core'
-    implementation 'org.assertj:assertj-core'
+    api 'com.lmax:disruptor'
+    api 'com.baomidou:kisso'
+    api 'com.mysql:mysql-connector-j'
+    api 'com.baomidou:mybatis-plus-boot-starter'
+    api 'org.locationtech.jts:jts-core'
+    api 'org.assertj:assertj-core'
 
     compileOnly 'javax.servlet:javax.servlet-api'
 
