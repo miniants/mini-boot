@@ -117,7 +117,7 @@ subprojects {
         annotationProcessor 'org.projectlombok:lombok' //注释处理器
         api 'org.projectlombok:lombok' //引入lombok
         api 'cn.hutool:hutool-all'
-
+        compileOnly 'org.slf4j:slf4j-api'
     }
     dependencyManagement {
         dependencies {
