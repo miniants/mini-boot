@@ -112,9 +112,9 @@ subprojects {
 
     dependencies {
         annotationProcessor 'org.projectlombok:lombok' //注释处理器
-        implementation 'org.projectlombok:lombok' //引入lombok
+        api 'org.projectlombok:lombok' //引入lombok
 
-        implementation 'cn.hutool:hutool-all'
+        api 'cn.hutool:hutool-all'
 
     }
     dependencyManagement {
