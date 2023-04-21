@@ -8,9 +8,10 @@ buildscript {
         gradleReleaseVersion = '3.0.2'
 
         //组件版本
-        lomokVersion = '1.18.20'
+        lombokVersion = '1.18.26'
+        mysqlConnectorVersion = '8.0.32'
+
         mybatisPlusVersion = '3.5.2'
-        mysqlConnectorVersion = '8.0.31'
         hutoolVersion = '5.8.15'
         itextpdfVersion = '5.4.2'
         kissoVersion = '3.8.3'
@@ -19,6 +20,10 @@ buildscript {
         springdocVersion = '1.6.8'
 
         // 配置 Maven 发布的仓库信息
+        myRepoUrl = "http://39.100.225.51:18001/repository/stormwind-public"
+        aliRepoUrl = "https://maven.aliyun.com/repository/public"
+        gradleRepoUrl = 'https://plugins.gradle.org/m2/'
+
         myNexusRepoUrl = "http://39.100.225.51:18001/repository/stormwind"
         myNexusSnapshotsRepoUrl = "http://39.100.225.51:18001/repository/stormwind-snapshot/"
         myNexusRepoUsername = "guoqianyou"
@@ -29,18 +34,17 @@ buildscript {
     repositories {
         mavenLocal()
         maven {
-            name "USTB"; url "http://39.100.225.51:18001/repository/stormwind-public"
+            name "USTB"; url myRepoUrl
             allowInsecureProtocol = true
             credentials { username myNexusRepoUsername; password myNexusRepoPassword }
         }
-        maven { name "Alibaba"; url "https://maven.aliyun.com/repository/public" }
-        maven { name "gradle"; url 'https://plugins.gradle.org/m2/' }
+        maven { name "Alibaba"; url aliRepoUrl }
+        maven { name "gradle"; url gradleRepoUrl }
         mavenCentral()
     }
     dependencies {
-        //这个用来帮助管理io.spring.dependency-management的版本号，自动根据springboot对应上
+        //spring-boot-gradle-plugin,方便版本管理
         classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
-        //release版本号
         classpath "net.researchgate:gradle-release:${gradleReleaseVersion}"
     }
 }
@@ -53,6 +57,9 @@ allprojects {
     apply plugin: 'java-library'
     apply plugin: 'maven-publish'
     apply plugin: "net.researchgate.release"
+    apply plugin: 'org.springframework.boot'
+    apply plugin: 'io.spring.dependency-management'
+
 
     group 'cn.miniants'
     sourceCompatibility = 17
@@ -66,14 +73,17 @@ allprojects {
     repositories {
         mavenLocal()
         maven {
-            name "USTB"; url "http://39.100.225.51:18001/repository/stormwind-public";
-            allowInsecureProtocol = true
+            name "USTB"; url myRepoUrl; allowInsecureProtocol = true
             credentials { username myNexusRepoUsername; password myNexusRepoPassword }
         }
-        maven { name "Alibaba"; url "https://maven.aliyun.com/repository/public" }
+        maven { name "Alibaba"; url aliRepoUrl }
         mavenCentral()
     }
-
+    dependencies {
+        testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.2'
+        testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.2'
+        implementation "org.projectlombok:lombok:${lombokVersion}"
+    }
 
     // 根据版本号判断是否为快照版本
     def isSnapshot = project.version.endsWith("-SNAPSHOT")
@@ -103,10 +113,6 @@ allprojects {
             }
         }
     }
-
-
-
-
 }
 
 subprojects {
@@ -121,7 +127,7 @@ subprojects {
     }
     dependencyManagement {
         dependencies {
-            dependency "org.projectlombok:lombok:${lomokVersion}" //lombok
+            dependency "org.projectlombok:lombok:${lombokVersion}" //lombok
             dependency "mysql:mysql-connector-java:${mysqlConnectorVersion}" //mysql
             dependency "com.baomidou:mybatis-plus-boot-starter:${mybatisPlusVersion}"//数据库操作
             dependency "cn.hutool:hutool-all:${hutoolVersion}" //工具包
@@ -140,8 +146,6 @@ subprojects {
     }
 
 }
-
-
 
 release {
     failOnCommitNeeded = false
