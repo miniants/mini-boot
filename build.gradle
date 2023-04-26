@@ -46,10 +46,40 @@ buildscript {
         //spring-boot-gradle-plugin,方便版本管理
         classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
         classpath "net.researchgate:gradle-release:${gradleReleaseVersion}"
+        classpath "com.google.cloud.tools:jib-gradle-plugin:3.3.1"
+        classpath 'org.yaml:snakeyaml:1.30'
     }
 }
 
+plugins {
+    id 'org.ajoberstar.grgit' version '5.2.0'
+}
 
+println "=====${group}版本信息(gradle.properties)："
+def nextVersion = version.replaceAll(/(\d+)(?!.*\d)/) { Integer.parseInt(it[1]) + 1 }
+println "当前版本：${version}；下个版本：${nextVersion}"
+
+task tagRelease {
+    description = 'Tags the current head with the project\'s version.'
+    doLast {
+        grgit.tag.add(name:"v${version}")
+        def properties = new Properties()
+        file('gradle.properties').withInputStream { properties.load(it) }
+        properties.setProperty('version', "${nextVersion}")
+        file('gradle.properties').withOutputStream { properties.store(it, null) }
+        grgit.commit(all:true,message:"This is NewVersion v${nextVersion} Created after Release of ${version}")
+        grgit.push(all: true);
+        println("=====项目版本升级：")
+        println("新版本：${nextVersion}")
+    }
+}
+
+task pushToOrigin {
+    description = 'Pushes current branch\'s committed changes to origin repo.'
+    doLast {
+        grgit.push()
+    }
+}
 
 //全局配置,包括root和所有子项目都会继承
 allprojects {
