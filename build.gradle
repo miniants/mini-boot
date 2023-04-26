@@ -68,7 +68,7 @@ task tagRelease {
         properties.setProperty('version', "${nextVersion}")
         file('gradle.properties').withOutputStream { properties.store(it, null) }
         grgit.commit(all:true,message:"This is NewVersion v${nextVersion} Created after Release of ${version}")
-        grgit.push(all: true);
+        //grgit.push(all: true);
         println("=====项目版本升级：")
         println("新版本：${nextVersion}")
     }
