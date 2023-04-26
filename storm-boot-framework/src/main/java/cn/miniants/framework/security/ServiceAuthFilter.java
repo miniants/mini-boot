@@ -18,6 +18,8 @@ import static cn.miniants.framework.constant.StormwindConstant.AuthConstants.JWT
  * 这个过滤器是给服务间调用的时候使用的，比如服务A调用服务B，服务B需要验证服务A的合法性
  */
 
+@ConditionalOnProperty(prefix = "miniants.auth",name = "enabled", havingValue = "true")
+@Component
 public class ServiceAuthFilter implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
