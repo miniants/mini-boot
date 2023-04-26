@@ -18,7 +18,7 @@ import static cn.miniants.framework.constant.StormwindConstant.AuthConstants.JWT
  * 这个过滤器是给服务间调用的时候使用的，比如服务A调用服务B，服务B需要验证服务A的合法性
  */
 
-@ConditionalOnProperty(prefix = "miniants.auth",name = "enabled", havingValue = "true")
+@ConditionalOnProperty(prefix = "miniants.auth", name = "enabled", havingValue = "true")
 @Component
 public class ServiceAuthFilter implements HandlerInterceptor {
     @Override
@@ -26,8 +26,7 @@ public class ServiceAuthFilter implements HandlerInterceptor {
         //认证信息从Header 或 请求参数 中获取
         String jwt_credentials = request.getHeader(JWT_CREDENTIALS);
 
-        //TODO服务间的认证再这里做，目前先都放行
-        if(null != jwt_credentials){
+        if (null != jwt_credentials) {
             JsonNode jwtObject = JSONUtil.readTree(jwt_credentials);
             ThreadLocalUtils.put(JWT_USER_SESSION, UserSession.builder()
                     .username(jwtObject.get("username").asText())
@@ -35,9 +34,10 @@ public class ServiceAuthFilter implements HandlerInterceptor {
                     .id(jwtObject.get("id").asLong())
                     .clientId(jwtObject.get("clientId").asText())
                     .build());
+
         }
 
-//        UserSession userSession = ;
-        return preHandle(request, response, handler);
+        //TODO服务间的认证再这里做，目前先都放行
+        return true;
     }
 }
