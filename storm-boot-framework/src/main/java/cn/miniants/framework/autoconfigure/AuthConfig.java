@@ -10,14 +10,14 @@ import javax.annotation.Resource;
 
 @Configuration
 public class AuthConfig implements WebMvcConfigurer {
-    @Resource
-    private ServiceAuthFilter serviceAuthFilter;
+    @Value("${miniants.auth.enabled:false}")
+    private boolean serviceAuthFilterEnabled;
 
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        if (serviceAuthFilter != null) {
-            registry.addInterceptor(serviceAuthFilter).addPathPatterns("/**");
+        if (serviceAuthFilterEnabled) {
+            registry.addInterceptor(new ServiceAuthFilter()).addPathPatterns("/**");
         }
     }
 }
