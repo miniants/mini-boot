@@ -36,7 +36,7 @@ import org.springframework.core.annotation.Order;
  */
 @Lazy
 @Configuration(proxyBeanMethods = false)
-@Import({JsonAutoConfiguration.class, MybatisPlusConfiguration.class, RedisCacheAutoConfiguration.class, RedisLockAutoConfiguration.class})
+@Import({JsonAutoConfiguration.class, MybatisPlusConfiguration.class, RedisCacheAutoConfiguration.class, RedisLockAutoConfiguration.class, AuthConfig.class})
 public class AizudaAutoConfiguration {
 
     /**

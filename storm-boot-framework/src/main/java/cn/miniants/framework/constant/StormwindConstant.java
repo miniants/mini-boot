@@ -10,4 +10,10 @@ public interface StormwindConstant {
         String FILE_BUCKET = "files";
         String STUDENT_PHOTO_BUCKET = "photos";
     }
+
+    interface AuthConstants{
+        String JWT_CREDENTIALS = "Credentials";
+        String JWT_USER_SESSION = "UserSession";
+
+    }
 }

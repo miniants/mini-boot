@@ -7,6 +7,8 @@ package cn.miniants.framework.web;
 
 import cn.hutool.core.lang.Assert;
 import cn.miniants.framework.token.StormwindToken;
+import cn.miniants.toolkit.JSONUtil;
+import cn.miniants.toolkit.ThreadLocalUtils;
 import com.baomidou.kisso.SSOHelper;
 import com.baomidou.kisso.security.token.SSOToken;
 import cn.miniants.framework.spring.SpringHelper;
@@ -18,6 +20,8 @@ import lombok.Setter;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Objects;
 import java.util.Optional;
+
+import static cn.miniants.framework.constant.StormwindConstant.AuthConstants.JWT_USER_SESSION;
 
 /**
  * 爱组搭 http://aizuda.com
@@ -33,25 +37,43 @@ import java.util.Optional;
 public class UserSession {
     private Long id;
     private String username;
+    private String authorities;
+    private String scope;
+    private String clientId;
+    private String userPayload;
     private TokenUserType userType;
 
     public static Optional<UserSession> getLoginInfoOpt() {
-        return Optional.ofNullable(getLoginInfo(SpringHelper.getCurrentRequest(), true));
+        return Optional.ofNullable(getCurSession(SpringHelper.getCurrentRequest(), true));
     }
 
-    public static UserSession getLoginInfo() {
-        return getLoginInfo(SpringHelper.getCurrentRequest(), false);
+    public static UserSession getCurSession() {
+        return getCurSession(SpringHelper.getCurrentRequest(), false);
     }
 
-    public static UserSession getLoginInfo(HttpServletRequest request, boolean allowNull) {
+    public static <T> T getUserPayload(Class<T> clazz) {
+        return JSONUtil.parse(getCurSession().getUserPayload(), clazz);
+    }
+
+    private static UserSession getCurSession(HttpServletRequest request, boolean allowNull) {
+        UserSession userSession = ThreadLocalUtils.get(JWT_USER_SESSION);
+
+        if (null != userSession) {
+            return userSession;
+        }
+
+        // TODO 改造后要处理一下这里，暂时兼容一下
         StormwindToken ssoToken = getSSOToken(request, allowNull);
-        return Optional.ofNullable(ssoToken)
+        userSession =  Optional.ofNullable(ssoToken)
                 .map(ssoToken1 -> UserSession.builder()
                         .id(Long.valueOf(ssoToken1.getId()))
                         .username(ssoToken1.getIssuer())
                         .userType(ssoToken1.getUserType())
                         .build())
                 .orElse(null);
+        ThreadLocalUtils.put(JWT_USER_SESSION, userSession);
+
+        return userSession;
     }
 
     public static StormwindToken getSSOToken(HttpServletRequest request, boolean allowNull) {

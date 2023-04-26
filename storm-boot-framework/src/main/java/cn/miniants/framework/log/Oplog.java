@@ -196,7 +196,7 @@ public class Oplog implements BeanConvert {
     public Oplog around(Signature signature, HttpServletRequest request, Object[] args) {
         if (null == this.createId) {
             // 尝试设置审计信息
-            this.audit(UserSession.getLoginInfo(request, true));
+            this.audit(UserSession.getCurSession());
         }
         if (null != args && args.length > 0) {
             this.params = JSONUtil.toJSONString(args);
