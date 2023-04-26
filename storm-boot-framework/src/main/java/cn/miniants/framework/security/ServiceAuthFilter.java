@@ -25,14 +25,17 @@ public class ServiceAuthFilter implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         //认证信息从Header 或 请求参数 中获取
         String jwt_credentials = request.getHeader(JWT_CREDENTIALS);
-        JsonNode jwtObject = JSONUtil.readTree(jwt_credentials);
 
-        ThreadLocalUtils.put(JWT_USER_SESSION, UserSession.builder()
-                .username(jwtObject.get("username").asText())
-                .authorities(jwtObject.get("authorities").asText())
-                .id(jwtObject.get("id").asLong())
-                .clientId(jwtObject.get("clientId").asText())
-                .build());
+        //TODO服务间的认证再这里做，目前先都放行
+        if(null != jwt_credentials){
+            JsonNode jwtObject = JSONUtil.readTree(jwt_credentials);
+            ThreadLocalUtils.put(JWT_USER_SESSION, UserSession.builder()
+                    .username(jwtObject.get("username").asText())
+                    .authorities(jwtObject.get("authorities").asText())
+                    .id(jwtObject.get("id").asLong())
+                    .clientId(jwtObject.get("clientId").asText())
+                    .build());
+        }
 
 //        UserSession userSession = ;
         return preHandle(request, response, handler);
