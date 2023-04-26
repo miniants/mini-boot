@@ -183,12 +183,12 @@ subprojects {
 
 }
 
-release {
-    failOnCommitNeeded = false
-    failOnUnversionedFiles = false
-    scmAdapters = [net.researchgate.release.GitAdapter]
-    git{
-        requireBranch.set('master')
-    }
-}
-tasks.named('publish').configure(t->t.dependsOn('release'))
+//release {
+//    failOnCommitNeeded = false
+//    failOnUnversionedFiles = false
+//    scmAdapters = [net.researchgate.release.GitAdapter]
+//    git{
+//        requireBranch.set('master')
+//    }
+//}
+tasks.named('publish').configure(t->t.dependsOn('tagRelease'))
