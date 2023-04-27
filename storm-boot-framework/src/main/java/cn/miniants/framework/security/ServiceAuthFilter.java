@@ -29,10 +29,10 @@ public class ServiceAuthFilter implements HandlerInterceptor {
         if (null != jwt_credentials) {
             JsonNode jwtObject = JSONUtil.readTree(jwt_credentials);
             ThreadLocalUtils.put(JWT_USER_SESSION, UserSession.builder()
-                    .username(jwtObject.get("username").asText())
-                    .authorities(jwtObject.get("authorities").asText())
-                    .id(jwtObject.get("id").asLong())
-                    .clientId(jwtObject.get("clientId").asText())
+                    .username(null==jwtObject.get("username")?null:jwtObject.get("username").asText())
+                    .authorities(null==jwtObject.get("authorities")?null:jwtObject.get("authorities").asText())
+                    .id(null==jwtObject.get("id")?null:jwtObject.get("id").asLong())
+                    .clientId(null==jwtObject.get("clientId")?null:jwtObject.get("clientId").asText())
                     .build());
 
         }
