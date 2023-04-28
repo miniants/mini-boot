@@ -16,6 +16,9 @@ dependencies {
     implementation 'org.locationtech.jts:jts-core'
     implementation 'org.assertj:assertj-core'
 
+    implementation "org.springframework.boot:spring-boot-starter-security"
+    implementation 'org.springframework.security.oauth.boot:spring-security-oauth2-autoconfigure'
+
     compileOnly 'javax.servlet:javax.servlet-api'
 
     testImplementation 'junit:junit'
