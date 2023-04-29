@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Import;
 
 @Configuration
 @Import(FeignClientsConfiguration.class)
-public class FeignConfiguration {
+public class StormMiniFeignConfiguration {
     @Bean
     public Decoder feignDecoder(ObjectFactory<HttpMessageConverters> messageConverters) {
         return new CustomFeignDecoder(messageConverters);
