@@ -8,11 +8,13 @@ import org.springframework.cloud.openfeign.FeignClientsConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Primary;
 
 @Configuration
 @Import(FeignClientsConfiguration.class)
 public class StormMiniFeignConfiguration {
     @Bean
+    @Primary
     public Decoder feignDecoder(ObjectFactory<HttpMessageConverters> messageConverters) {
         return new CustomFeignDecoder(messageConverters);
     }
