@@ -3,21 +3,27 @@
  * ------------------------------------------
  * 受知识产权保护，请勿删除版权申明
  */
-package cn.miniants.framework.web;
+package cn.miniants.framework.advice;
 
 import cn.hutool.core.exceptions.ExceptionUtil;
 import cn.miniants.framework.api.ApiResult;
 import cn.miniants.framework.api.IErrorCode;
 import cn.miniants.framework.exception.ApiException;
 import cn.miniants.framework.spring.SpringHelper;
+import cn.miniants.toolkit.JSONUtil;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.security.SignatureException;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.http.server.ServerHttpRequest;
+import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
@@ -27,6 +33,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 import org.springframework.web.util.NestedServletException;
 
 import javax.servlet.http.HttpServletRequest;
@@ -49,14 +56,31 @@ import java.util.stream.Stream;
  */
 @Slf4j
 @RestControllerAdvice
-public class ServiceExceptionHandler {
-    /**
-     * 是否在响应结果中展示验证错误提示信息
-     */
+public class MiniControllerAdvice implements ResponseBodyAdvice<Object> {
+    /////////////////处理报文响应结构//////////////////////
+    @Override
+    public boolean supports(@NotNull MethodParameter returnType, @NotNull Class converterType) {
+        return !returnType.getMethod().getReturnType().isAssignableFrom(Void.TYPE);
+    }
+
+    @Override
+    public Object beforeBodyWrite(Object body, @NotNull MethodParameter returnType, @NotNull MediaType selectedContentType, @NotNull Class selectedConverterType,
+                                  @NotNull ServerHttpRequest request, @NotNull ServerHttpResponse response) {
+        if (body instanceof ApiResult) {
+            return body;
+        }
+        ApiResult<Object> apiResult = ApiResult.ok(body);
+        if (returnType.getParameterType().isAssignableFrom(String.class)) {
+            // 字符串类型特殊处理
+            return JSONUtil.toJSONString(apiResult);
+        }
+        return apiResult;
+    }
+
+
+    /////////////////处理异常报文//////////////////////
     @Value("${spring.validation.message.enable:true}")
     private Boolean enableValidationMessage;
-
-
     /**
      * 转换FieldError列表为错误提示信息
      *

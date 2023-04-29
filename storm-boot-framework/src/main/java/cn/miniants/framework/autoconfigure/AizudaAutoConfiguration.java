@@ -7,7 +7,7 @@ package cn.miniants.framework.autoconfigure;
 
 import cn.miniants.framework.log.IOplogStorageProvider;
 import cn.miniants.framework.log.OplogAspect;
-import cn.miniants.framework.web.ServiceExceptionHandler;
+import cn.miniants.framework.advice.MiniControllerAdvice;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.*;
@@ -23,7 +23,7 @@ import org.springframework.core.annotation.Order;
  */
 @Lazy
 @Configuration(proxyBeanMethods = false)
-@Import({JsonAutoConfiguration.class, MybatisPlusConfiguration.class, RedisCacheAutoConfiguration.class, RedisLockAutoConfiguration.class, AuthConfiguration.class,StormMiniFeignConfiguration.class})
+@Import({JsonAutoConfiguration.class, MybatisPlusConfiguration.class, RedisCacheAutoConfiguration.class, RedisLockAutoConfiguration.class, AuthConfiguration.class, MiniFeignConfiguration.class})
 @ComponentScan(basePackages = {"cn.miniants.framework.security"})
 public class AizudaAutoConfiguration {
 
@@ -33,8 +33,8 @@ public class AizudaAutoConfiguration {
     @Bean
     @Order
     @ConditionalOnMissingBean
-    public ServiceExceptionHandler serviceExceptionHandler() {
-        return new ServiceExceptionHandler();
+    public MiniControllerAdvice serviceExceptionHandler() {
+        return new MiniControllerAdvice();
     }
 
 //    @Bean
