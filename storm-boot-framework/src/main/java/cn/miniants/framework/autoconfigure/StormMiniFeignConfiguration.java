@@ -1,5 +1,7 @@
 package cn.miniants.framework.autoconfigure;
 
+import cn.miniants.framework.interceptor.CustomFeignRequestInterceptor;
+import feign.RequestInterceptor;
 import feign.codec.Decoder;
 import cn.miniants.framework.advice.CustomFeignDecoder;
 import org.springframework.beans.factory.ObjectFactory;
@@ -17,5 +19,10 @@ public class StormMiniFeignConfiguration {
     @Primary
     public Decoder myFeignDecoder(ObjectFactory<HttpMessageConverters> messageConverters) {
         return new CustomFeignDecoder(messageConverters);
+    }
+
+    @Bean
+    public RequestInterceptor customRequestInterceptor() {
+        return new CustomFeignRequestInterceptor();
     }
 }

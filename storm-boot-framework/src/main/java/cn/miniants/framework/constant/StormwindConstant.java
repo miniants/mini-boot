@@ -16,4 +16,9 @@ public interface StormwindConstant {
         String JWT_USER_SESSION = "UserSession";
 
     }
+
+    interface GatewayConstants{
+        String SERVICE_INSTANCE_ID = "instance-id";
+        String SERVICE_INSTANCE_HOST = "instance-host";
+    }
 }
