@@ -20,5 +20,10 @@ public interface StormwindConstant {
     interface GatewayConstants{
         String SERVICE_INSTANCE_ID = "instance-id";
         String SERVICE_INSTANCE_HOST = "instance-host";
+
+        String JWT_TOKEN_PREFIX = "bearer";
+        String JWT_TOKEN_HEADER = "Authorization";
+
+        String JWT_CREDENTIALS_HEADER = "Credentials";
     }
 }

@@ -7,6 +7,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 
+import static cn.miniants.framework.constant.StormwindConstant.GatewayConstants.JWT_CREDENTIALS_HEADER;
 import static cn.miniants.framework.constant.StormwindConstant.GatewayConstants.SERVICE_INSTANCE_HOST;
 
 public class CustomFeignRequestInterceptor implements RequestInterceptor {
@@ -15,14 +16,17 @@ public class CustomFeignRequestInterceptor implements RequestInterceptor {
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         if (attributes != null) {
             HttpServletRequest request = attributes.getRequest();
-
             // 获取 instance-host HTTP头
             String instanceHost = request.getHeader(SERVICE_INSTANCE_HOST);
-
             // 如果存在，将 instance-host 添加到 Feign 请求头中
             if (instanceHost != null) {
                 requestTemplate.header(SERVICE_INSTANCE_HOST, instanceHost);
             }
+            String token = request.getHeader(JWT_CREDENTIALS_HEADER);
+            if (token != null) {
+                requestTemplate.header(JWT_CREDENTIALS_HEADER, token);
+            }
+
         }
 
     }
