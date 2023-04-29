@@ -15,7 +15,7 @@ import org.springframework.context.annotation.Primary;
 public class StormMiniFeignConfiguration {
     @Bean
     @Primary
-    public Decoder feignDecoder(ObjectFactory<HttpMessageConverters> messageConverters) {
+    public Decoder myFeignDecoder(ObjectFactory<HttpMessageConverters> messageConverters) {
         return new CustomFeignDecoder(messageConverters);
     }
 }
