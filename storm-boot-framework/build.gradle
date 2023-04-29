@@ -18,8 +18,10 @@ dependencies {
 
     compileOnly "org.springframework.boot:spring-boot-starter-security"
     compileOnly 'org.springframework.security.oauth.boot:spring-security-oauth2-autoconfigure'
-
+    compileOnly 'org.springframework.cloud:spring-cloud-starter-openfeign'
     compileOnly 'javax.servlet:javax.servlet-api'
+
+
 
     testImplementation 'junit:junit'
 }
