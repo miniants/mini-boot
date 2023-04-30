@@ -51,7 +51,7 @@ public class MiniFeignRequestInterceptor implements RequestInterceptor {
                 if (selectedInstance != null) {
                     String scheme = selectedInstance.getScheme() != null ? selectedInstance.getScheme() : "http";
                     String url = scheme + "://" + selectedInstance.getHost() + ":" + selectedInstance.getPort();
-                    requestTemplate.target(url + requestTemplate.path());
+                    requestTemplate.target(url + requestTemplate.url());
                 }
             }
 
