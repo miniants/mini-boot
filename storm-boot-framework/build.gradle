@@ -1,20 +1,20 @@
 dependencies {
     implementation project(':storm-boot-toolkit')
 
-    compileOnly 'org.springframework.boot:spring-boot-starter-web'
-    compileOnly 'org.springframework.boot:spring-boot-starter-aop'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-aop'
 
-    compileOnly 'org.springframework.boot:spring-boot-starter-data-redis'
-    compileOnly 'org.springframework.integration:spring-integration-redis'
-    compileOnly 'javax.validation:validation-api'
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation 'org.springframework.integration:spring-integration-redis'
+    implementation 'javax.validation:validation-api'
 
 
-    compileOnly 'com.lmax:disruptor'
-    compileOnly 'com.baomidou:kisso'
-    compileOnly 'com.mysql:mysql-connector-j'
-    compileOnly 'com.baomidou:mybatis-plus-boot-starter'
-    compileOnly 'org.locationtech.jts:jts-core'
-    compileOnly 'org.assertj:assertj-core'
+    implementation 'com.lmax:disruptor'
+    implementation 'com.baomidou:kisso'
+    implementation 'com.mysql:mysql-connector-j'
+    implementation 'com.baomidou:mybatis-plus-boot-starter'
+    implementation 'org.locationtech.jts:jts-core'
+    implementation 'org.assertj:assertj-core'
 
     compileOnly "org.springframework.boot:spring-boot-starter-security"
     compileOnly 'org.springframework.security.oauth.boot:spring-security-oauth2-autoconfigure'
