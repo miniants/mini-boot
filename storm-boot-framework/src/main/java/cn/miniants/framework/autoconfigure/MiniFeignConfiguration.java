@@ -28,6 +28,7 @@ public class MiniFeignConfiguration {
 //    }
 
     @Bean
+    @Primary
     public Feign.Builder miniFeignBuilder() {
         return Feign.builder().requestInterceptor(template -> {
             String serviceId = template.feignTarget().type().getAnnotation(FeignClient.class).name();
