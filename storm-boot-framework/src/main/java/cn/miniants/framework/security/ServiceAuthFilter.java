@@ -12,6 +12,9 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
+
 import static cn.miniants.framework.constant.StormwindConstant.AuthConstants.JWT_CREDENTIALS;
 import static cn.miniants.framework.constant.StormwindConstant.AuthConstants.JWT_USER_SESSION;
 
@@ -28,7 +31,8 @@ public class ServiceAuthFilter implements HandlerInterceptor {
         String jwt_credentials = request.getHeader(JWT_CREDENTIALS);
 
         if (null != jwt_credentials) {
-            String jwt_credentials_json = URLUtil.decode(jwt_credentials);
+            String jwt_credentials_json = new String(Base64.getDecoder().decode(jwt_credentials), StandardCharsets.UTF_8);
+
             JsonNode jwtObject = JSONUtil.readTree(jwt_credentials_json);
             ThreadLocalUtils.put(JWT_USER_SESSION, UserSession.builder()
                     .username(null==jwtObject.get("username")?null:jwtObject.get("username").asText())
