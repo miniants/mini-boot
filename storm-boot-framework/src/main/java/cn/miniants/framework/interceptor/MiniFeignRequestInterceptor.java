@@ -8,6 +8,7 @@ import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
@@ -15,7 +16,7 @@ import static cn.miniants.framework.constant.StormwindConstant.GatewayConstants.
 import static cn.miniants.framework.constant.StormwindConstant.GatewayConstants.SERVICE_INSTANCE_HOST;
 
 public class MiniFeignRequestInterceptor implements RequestInterceptor {
-    @Autowired
+    @Resource
     private NacosDiscoveryClient nacosDiscoveryClient;
 //    private final String serviceId;
 //
