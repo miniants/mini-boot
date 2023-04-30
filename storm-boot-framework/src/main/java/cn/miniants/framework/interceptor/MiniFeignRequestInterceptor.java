@@ -3,6 +3,7 @@ package cn.miniants.framework.interceptor;
 import com.alibaba.cloud.nacos.discovery.NacosDiscoveryClient;
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -17,6 +18,9 @@ import static cn.miniants.framework.constant.StormwindConstant.GatewayConstants.
 public class MiniFeignRequestInterceptor implements RequestInterceptor {
     @Resource
     private NacosDiscoveryClient nacosDiscoveryClient;
+
+    @Value("${miniants.feign.throw-on-host-miss}")
+    private boolean throwOnHostMiss = false;
 
     //    private final String serviceId;
 //
@@ -54,7 +58,7 @@ public class MiniFeignRequestInterceptor implements RequestInterceptor {
                     String selectHostUrl = scheme + "://" + selectedInstance.getHost() + ":" + selectedInstance.getPort() + "/";
                     String selectServiceUrl = requestTemplate.feignTarget().url().replaceAll(scheme + "://.*/", selectHostUrl);
                     requestTemplate.target(selectServiceUrl);
-                } else {
+                } else if(throwOnHostMiss){
                     throw new RuntimeException("FeignClient未找到目标实例%s来调用服务%s".formatted(instanceHost, serviceName));
                 }
             }
