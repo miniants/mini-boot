@@ -9,9 +9,9 @@ import cn.hutool.core.exceptions.ExceptionUtil;
 import cn.miniants.framework.api.ApiResult;
 import cn.miniants.framework.api.IErrorCode;
 import cn.miniants.framework.exception.ApiException;
+import cn.miniants.framework.exception.MiniFeignException;
 import cn.miniants.framework.spring.SpringHelper;
 import cn.miniants.toolkit.JSONUtil;
-import feign.FeignException;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.MalformedJwtException;
@@ -97,6 +97,7 @@ public class MiniControllerResultAdvice implements ResponseBodyAdvice<Object> {
     /////////////////处理异常报文//////////////////////
     @Value("${spring.validation.message.enable:true}")
     private Boolean enableValidationMessage;
+
     /**
      * 转换FieldError列表为错误提示信息
      *
@@ -227,15 +228,15 @@ public class MiniControllerResultAdvice implements ResponseBodyAdvice<Object> {
             res = ApiResult.failed(e.getMessage());
         } else if (e instanceof HttpMessageNotReadableException) {
             // 请求参数无法读取
-            res =  ApiResult.failed(e.getMessage());
+            res = ApiResult.failed(e.getMessage());
         } else if (e instanceof ConstraintViolationException) {
             res = ApiResult.failed(this.convertConstraintViolationsToMessage((ConstraintViolationException) e));
         } else if (e instanceof MethodArgumentTypeMismatchException) {
             resp.setStatus(301);
             return ApiResult.failed("请求参数错误");
-        } else if(e instanceof FeignException){
+        } else if (e instanceof MiniFeignException) {
             return ApiResult.failed("Feign调用异常%s".formatted(e.getMessage()));
-        }else {
+        } else {
             // 系统内部异常，打印异常栈
             log.error("Error: handleBadRequest StackTrace : {}", ExceptionUtil.stacktraceToString(e));
             res = ApiResult.failed("Internal Server Error");
