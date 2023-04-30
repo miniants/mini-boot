@@ -19,7 +19,7 @@ public class MiniFeignRequestInterceptor implements RequestInterceptor {
     @Resource
     private NacosDiscoveryClient nacosDiscoveryClient;
 
-    @Value("${miniants.feign.throw-on-host-miss}")
+    @Value("${miniants.feign.throw-on-host-miss:false}")
     private boolean throwOnHostMiss = false;
 
     //    private final String serviceId;
