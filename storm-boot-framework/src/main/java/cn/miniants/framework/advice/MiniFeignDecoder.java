@@ -48,7 +48,8 @@ public class MiniFeignDecoder implements Decoder {
                 String responseBody = reader.lines().collect(Collectors.joining("\n"));
                 // 在这里，你可以将 responseBody 反序列化为你需要的对象类型。
                 // 例如，如果你知道响应只包含一个数字，你可以将其解析为一个整数。
-                return JSONUtil.readValue(responseBody, wrappedType);
+                ApiResult<?> apiResponse = JSONUtil.readValue(responseBody, wrappedType);
+                return null==apiResponse?null:apiResponse.getData();
             }
         }
 
