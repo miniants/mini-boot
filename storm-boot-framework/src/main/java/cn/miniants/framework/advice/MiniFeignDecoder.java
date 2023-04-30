@@ -57,7 +57,6 @@ public class MiniFeignDecoder implements Decoder {
         }
 
         //其他情况，直接调用原来的解码器
-        ApiResult<?> apiResponse = (ApiResult<?>) delegate.decode(response, type);
-        return apiResponse.getData();
+        return delegate.decode(response, type);
     }
 }
