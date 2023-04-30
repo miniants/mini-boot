@@ -25,6 +25,7 @@ import org.springframework.util.ObjectUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Type;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -189,6 +190,14 @@ public class JSONUtil {
         }
     }
 
+
+    public static <T> T readValue(String content, Type wrappedType) {
+        if (ObjectUtils.isEmpty(content)) {
+            return null;
+        }
+        JavaType javaType = getObjectMapper().getTypeFactory().constructType(wrappedType);
+        return readValue(content, javaType);
+    }
     /**
      * 将json byte 数组反序列化成对象
      *
