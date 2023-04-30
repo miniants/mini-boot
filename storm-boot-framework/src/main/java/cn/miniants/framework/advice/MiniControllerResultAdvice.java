@@ -41,6 +41,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import javax.validation.Path;
+import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -56,7 +57,7 @@ import java.util.stream.Stream;
  */
 @Slf4j
 @RestControllerAdvice
-public class MiniControllerAdvice implements ResponseBodyAdvice<Object> {
+public class MiniControllerResultAdvice implements ResponseBodyAdvice<Object> {
     /////////////////处理报文响应结构//////////////////////
     @Override
     public boolean supports(@NotNull MethodParameter returnType, @NotNull Class converterType) {
@@ -69,6 +70,15 @@ public class MiniControllerAdvice implements ResponseBodyAdvice<Object> {
         if (body instanceof ApiResult) {
             return body;
         }
+        Method method = returnType.getMethod();
+        if (method != null) {
+            MiniControllerResult myAnnotation = method.getAnnotation(MiniControllerResult.class);
+            // 如果MyAnnotation注解存在，则执行相应的操作
+            if (myAnnotation != null && myAnnotation.skipWrapper()) {
+                return body;
+            }
+        }
+
         ApiResult<Object> apiResult = ApiResult.ok(body);
         if (returnType.getParameterType().isAssignableFrom(String.class)) {
             // 字符串类型特殊处理

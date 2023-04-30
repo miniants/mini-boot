@@ -3,7 +3,7 @@ package cn.miniants.framework.autoconfigure;
 import cn.miniants.framework.interceptor.CustomFeignRequestInterceptor;
 import feign.RequestInterceptor;
 import feign.codec.Decoder;
-import cn.miniants.framework.advice.CustomFeignDecoder;
+import cn.miniants.framework.advice.MiniFeignDecoder;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.cloud.openfeign.FeignClientsConfiguration;
@@ -18,7 +18,7 @@ public class MiniFeignConfiguration {
     @Bean
     @Primary
     public Decoder myFeignDecoder(ObjectFactory<HttpMessageConverters> messageConverters) {
-        return new CustomFeignDecoder(messageConverters);
+        return new MiniFeignDecoder(messageConverters);
     }
 
     @Bean

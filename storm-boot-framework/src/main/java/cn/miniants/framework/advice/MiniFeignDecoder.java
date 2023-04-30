@@ -10,11 +10,11 @@ import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.cloud.openfeign.support.SpringDecoder;
 
-public class CustomFeignDecoder implements Decoder {
+public class MiniFeignDecoder implements Decoder {
 
     private final Decoder delegate;
 
-    public CustomFeignDecoder(ObjectFactory<HttpMessageConverters> messageConverters) {
+    public MiniFeignDecoder(ObjectFactory<HttpMessageConverters> messageConverters) {
         this.delegate = new SpringDecoder(messageConverters);
     }
 
