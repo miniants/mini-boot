@@ -1,11 +1,12 @@
 package cn.miniants.framework.autoconfigure;
 
-import cn.miniants.framework.interceptor.CustomFeignRequestInterceptor;
-import feign.RequestInterceptor;
+import cn.miniants.framework.interceptor.MiniFeignRequestInterceptor;
+import feign.Feign;
 import feign.codec.Decoder;
 import cn.miniants.framework.advice.MiniFeignDecoder;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
+import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.cloud.openfeign.FeignClientsConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,8 +22,16 @@ public class MiniFeignConfiguration {
         return new MiniFeignDecoder(messageConverters);
     }
 
+//    @Bean
+//    public RequestInterceptor customRequestInterceptor() {
+//        return new CustomFeignRequestInterceptor();
+//    }
+
     @Bean
-    public RequestInterceptor customRequestInterceptor() {
-        return new CustomFeignRequestInterceptor();
+    public Feign.Builder feignBuilder() {
+        return Feign.builder().requestInterceptor(template -> {
+            String serviceId = template.feignTarget().type().getAnnotation(FeignClient.class).name();
+            new MiniFeignRequestInterceptor(serviceId).apply(template);
+        });
     }
 }
