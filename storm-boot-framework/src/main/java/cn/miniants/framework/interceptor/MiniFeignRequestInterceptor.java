@@ -50,9 +50,9 @@ public class MiniFeignRequestInterceptor implements RequestInterceptor {
                 // 如果找到匹配的实例，则将其设置为 Feign 客户端的请求 URL
                 if (selectedInstance != null) {
                     String scheme = selectedInstance.getScheme() != null ? selectedInstance.getScheme() : "http";
-                    String url = scheme + "://" + selectedInstance.getHost() + ":" + selectedInstance.getPort()+"/";
-                    requestTemplate.feignTarget().url().replaceAll(scheme+"://.*/", url);
-                    requestTemplate.target(url + requestTemplate.url());
+                    String selectHostUrl = scheme + "://" + selectedInstance.getHost() + ":" + selectedInstance.getPort()+"/";
+                    String selectServiceUrl = requestTemplate.feignTarget().url().replaceAll(scheme+"://.*/", selectHostUrl);
+                    requestTemplate.target(selectServiceUrl);
                 }
             }
 
