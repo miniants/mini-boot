@@ -37,7 +37,7 @@ public class MiniFeignRequestInterceptor implements RequestInterceptor {
             // 获取 token HTTP头
             String token = request.getHeader(JWT_CREDENTIALS_HEADER);
             if (StrUtil.isNotBlank(token)) {
-                requestTemplate.header(JWT_CREDENTIALS_HEADER, URLUtil.encode(token));
+                requestTemplate.header(JWT_CREDENTIALS_HEADER, token);
             }
 
 
