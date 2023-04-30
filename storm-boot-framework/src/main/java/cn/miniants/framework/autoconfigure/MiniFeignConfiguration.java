@@ -1,10 +1,12 @@
 package cn.miniants.framework.autoconfigure;
 
+import cn.miniants.framework.advice.MiniFeignErrorDecoder;
 import cn.miniants.framework.interceptor.MiniFeignRequestInterceptor;
 import feign.Feign;
 import feign.RequestInterceptor;
 import feign.codec.Decoder;
 import cn.miniants.framework.advice.MiniFeignDecoder;
+import feign.codec.ErrorDecoder;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -23,6 +25,19 @@ public class MiniFeignConfiguration {
         return new MiniFeignDecoder(messageConverters);
     }
 
+    /**
+     * feign 响应异常异常处理
+     * @return
+     */
+    @Bean
+    public ErrorDecoder errorDecoder() {
+        return new MiniFeignErrorDecoder();
+    }
+
+    /**
+     * feign 调用拦截器,在请求头中加入服务名，指定调用哪个服务provider
+     * @return
+     */
     @Bean
     public RequestInterceptor customRequestInterceptor() {
         return new MiniFeignRequestInterceptor();

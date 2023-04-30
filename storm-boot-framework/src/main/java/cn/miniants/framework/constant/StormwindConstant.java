@@ -5,6 +5,9 @@ package cn.miniants.framework.constant;
  * @date 2022/10/21 10:48
  */
 public interface StormwindConstant {
+    interface MiniConstants{
+        String HTTP_HEAD_MINI_API = "Mini-Api";
+    }
     interface StoreBucket {
         String SCANNER_BUCKET = "scanner";
         String FILE_BUCKET = "files";

@@ -11,6 +11,7 @@ import cn.miniants.framework.api.IErrorCode;
 import cn.miniants.framework.exception.ApiException;
 import cn.miniants.framework.spring.SpringHelper;
 import cn.miniants.toolkit.JSONUtil;
+import feign.FeignException;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.MalformedJwtException;
@@ -49,6 +50,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static cn.miniants.framework.constant.StormwindConstant.MiniConstants.HTTP_HEAD_MINI_API;
+
 /**
  * Service 异常处理
  *
@@ -67,6 +70,9 @@ public class MiniControllerResultAdvice implements ResponseBodyAdvice<Object> {
     @Override
     public Object beforeBodyWrite(Object body, @NotNull MethodParameter returnType, @NotNull MediaType selectedContentType, @NotNull Class selectedConverterType,
                                   @NotNull ServerHttpRequest request, @NotNull ServerHttpResponse response) {
+        //框架的接口都用Mini-Api标识
+        response.getHeaders().add(HTTP_HEAD_MINI_API, "true");
+
         if (body instanceof ApiResult) {
             return body;
         }
@@ -147,7 +153,7 @@ public class MiniControllerResultAdvice implements ResponseBodyAdvice<Object> {
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public ApiResult<String> httpExceptionHandler(HttpServletResponse httpServletResponse, HttpRequestMethodNotSupportedException ex) {
         httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        return ApiResult.failed("请求地址错误");
+        return ApiResult.failed("请求错误：%s".formatted(ex.getMessage()));
     }
 
     /**
@@ -227,7 +233,9 @@ public class MiniControllerResultAdvice implements ResponseBodyAdvice<Object> {
         } else if (e instanceof MethodArgumentTypeMismatchException) {
             resp.setStatus(301);
             return ApiResult.failed("请求参数错误");
-        } else {
+        } else if(e instanceof FeignException){
+
+        }else {
             // 系统内部异常，打印异常栈
             log.error("Error: handleBadRequest StackTrace : {}", ExceptionUtil.stacktraceToString(e));
             res = ApiResult.failed("Internal Server Error");
