@@ -3,7 +3,6 @@ package cn.miniants.framework.interceptor;
 import com.alibaba.cloud.nacos.discovery.NacosDiscoveryClient;
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -18,7 +17,8 @@ import static cn.miniants.framework.constant.StormwindConstant.GatewayConstants.
 public class MiniFeignRequestInterceptor implements RequestInterceptor {
     @Resource
     private NacosDiscoveryClient nacosDiscoveryClient;
-//    private final String serviceId;
+
+    //    private final String serviceId;
 //
 //    public MiniFeignRequestInterceptor(String serviceId) {
 //        this.serviceId = serviceId;
@@ -41,7 +41,8 @@ public class MiniFeignRequestInterceptor implements RequestInterceptor {
             if (instanceHost != null) {
                 requestTemplate.header(SERVICE_INSTANCE_HOST, instanceHost);
 
-                List<ServiceInstance> instances = nacosDiscoveryClient.getInstances(requestTemplate.feignTarget().name());
+                String serviceName = requestTemplate.feignTarget().name();
+                List<ServiceInstance> instances = nacosDiscoveryClient.getInstances(serviceName);
                 ServiceInstance selectedInstance = instances.stream()
                         .filter(instance -> instanceHost.equals(instance.getHost()))
                         .findFirst()
@@ -50,11 +51,11 @@ public class MiniFeignRequestInterceptor implements RequestInterceptor {
                 // 如果找到匹配的实例，则将其设置为 Feign 客户端的请求 URL
                 if (selectedInstance != null) {
                     String scheme = selectedInstance.getScheme() != null ? selectedInstance.getScheme() : "http";
-                    String selectHostUrl = scheme + "://" + selectedInstance.getHost() + ":" + selectedInstance.getPort()+"/";
-                    String selectServiceUrl = requestTemplate.feignTarget().url().replaceAll(scheme+"://.*/", selectHostUrl);
+                    String selectHostUrl = scheme + "://" + selectedInstance.getHost() + ":" + selectedInstance.getPort() + "/";
+                    String selectServiceUrl = requestTemplate.feignTarget().url().replaceAll(scheme + "://.*/", selectHostUrl);
                     requestTemplate.target(selectServiceUrl);
-                }else {
-                    throw new RuntimeException("FeignClient未找到目标实例%s".formatted(instanceHost));
+                } else {
+                    throw new RuntimeException("FeignClient未找到目标实例%s来调用服务%s".formatted(instanceHost, serviceName));
                 }
             }
 
