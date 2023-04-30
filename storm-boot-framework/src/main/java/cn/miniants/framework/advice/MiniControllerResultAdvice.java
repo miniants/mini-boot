@@ -234,7 +234,7 @@ public class MiniControllerResultAdvice implements ResponseBodyAdvice<Object> {
             resp.setStatus(301);
             return ApiResult.failed("请求参数错误");
         } else if(e instanceof FeignException){
-
+            return ApiResult.failed("Feign调用异常%s".formatted(e.getMessage()));
         }else {
             // 系统内部异常，打印异常栈
             log.error("Error: handleBadRequest StackTrace : {}", ExceptionUtil.stacktraceToString(e));
