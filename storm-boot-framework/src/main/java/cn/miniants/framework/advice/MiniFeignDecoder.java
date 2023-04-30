@@ -30,28 +30,25 @@ public class MiniFeignDecoder implements Decoder {
 
     @Override
     public Object decode(Response response, Type type) throws IOException {
-        Type wrappedType = new ParameterizedType() {
-            @Override
-            public Type[] getActualTypeArguments() {
-                return new Type[]{type};
-            }
-
-            @Override
-            public Type getRawType() {
-                return ApiResult.class;
-            }
-
-            @Override
-            public Type getOwnerType() {
-                return null;
-            }
-        };
-
         //如果是框架的api都会包装成ApiResult，所以这里需要判断一下
         Map<String, Collection<String>> headers = response.headers();
         if (headers.get(HTTP_HEAD_MINI_API).stream().anyMatch(value -> value.contains("true"))
-                || headers.get("Content-Type").stream().anyMatch(value -> value.contains("text/plain") || value.contains("json/application"))
+                && ( headers.get("Content-Type").stream().anyMatch(value -> value.contains("text/plain") || value.contains("json/application")))
         ) {
+            Type wrappedType = new ParameterizedType() {
+                @Override
+                public Type[] getActualTypeArguments() {
+                    return new Type[]{type};
+                }
+                @Override
+                public Type getRawType() {
+                    return ApiResult.class;
+                }
+                @Override
+                public Type getOwnerType() {
+                    return null;
+                }
+            };
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(response.body().asInputStream()))) {
                 String responseBody = reader.lines().collect(Collectors.joining("\n"));
                 ApiResult<?> apiResponse = JSONUtil.readValue(responseBody, wrappedType);
@@ -60,7 +57,7 @@ public class MiniFeignDecoder implements Decoder {
         }
 
         //其他情况，直接调用原来的解码器
-        ApiResult<?> apiResponse = (ApiResult<?>) delegate.decode(response, wrappedType);
+        ApiResult<?> apiResponse = (ApiResult<?>) delegate.decode(response, type);
         return apiResponse.getData();
     }
 }
