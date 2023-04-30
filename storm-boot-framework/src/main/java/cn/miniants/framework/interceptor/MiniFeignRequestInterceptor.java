@@ -1,6 +1,7 @@
 package cn.miniants.framework.interceptor;
 
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.core.util.URLUtil;
 import com.alibaba.cloud.nacos.discovery.NacosDiscoveryClient;
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
@@ -36,7 +37,7 @@ public class MiniFeignRequestInterceptor implements RequestInterceptor {
             // 获取 token HTTP头
             String token = request.getHeader(JWT_CREDENTIALS_HEADER);
             if (StrUtil.isNotBlank(token)) {
-                requestTemplate.header(JWT_CREDENTIALS_HEADER, token);
+                requestTemplate.header(JWT_CREDENTIALS_HEADER, URLUtil.encode(token));
             }
 
 

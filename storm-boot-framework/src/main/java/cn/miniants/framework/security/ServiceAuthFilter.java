@@ -1,5 +1,6 @@
 package cn.miniants.framework.security;
 
+import cn.hutool.core.util.URLUtil;
 import cn.miniants.framework.web.UserSession;
 import cn.miniants.toolkit.JSONUtil;
 import cn.miniants.toolkit.ThreadLocalUtils;
@@ -27,7 +28,8 @@ public class ServiceAuthFilter implements HandlerInterceptor {
         String jwt_credentials = request.getHeader(JWT_CREDENTIALS);
 
         if (null != jwt_credentials) {
-            JsonNode jwtObject = JSONUtil.readTree(jwt_credentials);
+            String jwt_credentials_json = URLUtil.decode(jwt_credentials);
+            JsonNode jwtObject = JSONUtil.readTree(jwt_credentials_json);
             ThreadLocalUtils.put(JWT_USER_SESSION, UserSession.builder()
                     .username(null==jwtObject.get("username")?null:jwtObject.get("username").asText())
                     .authorities(null==jwtObject.get("authorities")?null:jwtObject.get("authorities").asText())
