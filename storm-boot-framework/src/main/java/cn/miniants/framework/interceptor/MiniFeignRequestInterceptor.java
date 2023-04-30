@@ -17,11 +17,11 @@ import static cn.miniants.framework.constant.StormwindConstant.GatewayConstants.
 public class MiniFeignRequestInterceptor implements RequestInterceptor {
     @Autowired
     private NacosDiscoveryClient nacosDiscoveryClient;
-    private final String serviceId;
-
-    public MiniFeignRequestInterceptor(String serviceId) {
-        this.serviceId = serviceId;
-    }
+//    private final String serviceId;
+//
+//    public MiniFeignRequestInterceptor(String serviceId) {
+//        this.serviceId = serviceId;
+//    }
     @Override
     public void apply(RequestTemplate requestTemplate) {
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
@@ -40,7 +40,7 @@ public class MiniFeignRequestInterceptor implements RequestInterceptor {
             if (instanceHost != null) {
                 requestTemplate.header(SERVICE_INSTANCE_HOST, instanceHost);
 
-                List<ServiceInstance> instances = nacosDiscoveryClient.getInstances(serviceId);
+                List<ServiceInstance> instances = nacosDiscoveryClient.getInstances(requestTemplate.feignTarget().name());
                 ServiceInstance selectedInstance = instances.stream()
                         .filter(instance -> instanceHost.equals(instance.getHost()))
                         .findFirst()
