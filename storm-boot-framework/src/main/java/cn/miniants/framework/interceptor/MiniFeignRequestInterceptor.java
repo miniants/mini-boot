@@ -58,7 +58,7 @@ public class MiniFeignRequestInterceptor implements RequestInterceptor {
                 if (selectedInstance != null) {
                     String scheme = selectedInstance.getScheme() != null ? selectedInstance.getScheme() : "http";
                     String selectHostUrl = scheme + "://" + selectedInstance.getHost() + ":" + selectedInstance.getPort() + "/";
-                    String selectServiceUrl = requestTemplate.feignTarget().url().replaceAll(scheme + "://.*/", selectHostUrl);
+                    String selectServiceUrl = requestTemplate.feignTarget().url().replaceAll(scheme + "://[^/]*/", selectHostUrl);
                     requestTemplate.target(selectServiceUrl);
                 } else if(throwOnHostMiss){
                     throw new RuntimeException("FeignClient未找到目标实例%s来调用服务%s".formatted(instanceHost, serviceName));
