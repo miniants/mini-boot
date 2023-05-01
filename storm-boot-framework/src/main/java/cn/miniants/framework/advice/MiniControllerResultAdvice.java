@@ -98,6 +98,8 @@ public class MiniControllerResultAdvice implements ResponseBodyAdvice<Object> {
     @Value("${spring.validation.message.enable:true}")
     private Boolean enableValidationMessage;
 
+    @Value("${miniants.api.returnErrorDetails:true}")
+    private Boolean returnErrorDetails;
     /**
      * 转换FieldError列表为错误提示信息
      *
@@ -240,6 +242,7 @@ public class MiniControllerResultAdvice implements ResponseBodyAdvice<Object> {
             // 系统内部异常，打印异常栈
             log.error("Error: handleBadRequest StackTrace : {}", ExceptionUtil.stacktraceToString(e));
             res = ApiResult.failed("Internal Server Error");
+            if(returnErrorDetails) res.setErrorDetails(ExceptionUtil.stacktraceToString(e));
         }
 
         if (SpringHelper.isValidationControllerMethod()) {

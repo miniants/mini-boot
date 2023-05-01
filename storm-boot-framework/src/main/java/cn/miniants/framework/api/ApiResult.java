@@ -42,6 +42,8 @@ public class ApiResult<T> implements Serializable {
      */
     private String message;
 
+    private String errorDetails;
+
     public ApiResult() {
         // to do nothing
     }
