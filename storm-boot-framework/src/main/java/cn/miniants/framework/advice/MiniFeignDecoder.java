@@ -33,7 +33,7 @@ public class MiniFeignDecoder implements Decoder {
         //如果是框架的api都会包装成ApiResult，所以这里需要判断一下
         Map<String, Collection<String>> headers = response.headers();
         if (headers.get(HTTP_HEAD_MINI_API).stream().anyMatch(value -> value.contains("true"))
-                && ( headers.get("Content-Type").stream().anyMatch(value -> value.contains("text/plain") || value.contains("json/application")))
+                && ( headers.get("Content-Type").stream().anyMatch(value -> value.contains("text/plain") || value.contains("application/json")))
         ) {
             Type wrappedType = new ParameterizedType() {
                 @Override

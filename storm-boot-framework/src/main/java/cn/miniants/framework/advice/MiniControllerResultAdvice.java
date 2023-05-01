@@ -244,7 +244,7 @@ public class MiniControllerResultAdvice implements ResponseBodyAdvice<Object> {
             return ApiResult.failed("Feign调用异常%s".formatted(e.getMessage()));
         } else {
             // 系统内部异常，打印异常栈
-            res = ApiResult.failed("Internal Server Error");
+            res = ApiResult.failed("Server Error:%s".formatted(e.getMessage()));
             resp.setStatus(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
             if(returnErrorDetails) res.setErrorDetails(ExceptionUtil.stacktraceToString(e));
             log.error("Error: handleBadRequest StackTrace : {}", ExceptionUtil.stacktraceToString(e));
