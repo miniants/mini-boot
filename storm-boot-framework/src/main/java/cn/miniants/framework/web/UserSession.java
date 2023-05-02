@@ -13,6 +13,7 @@ import com.baomidou.kisso.SSOHelper;
 import com.baomidou.kisso.security.token.SSOToken;
 import cn.miniants.framework.spring.SpringHelper;
 import cn.miniants.framework.token.TokenUserType;
+import com.fasterxml.jackson.databind.JsonNode;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -35,6 +36,8 @@ import static cn.miniants.framework.constant.StormwindConstant.AuthConstants.JWT
 @Setter
 @Builder
 public class UserSession {
+    private JsonNode originalData;
+
     private Long id;
     private String username;
     private String authorities;
@@ -42,6 +45,8 @@ public class UserSession {
     private String clientId;
     private String userPayload;
     private TokenUserType userType;
+
+    private JsonNode principals; // 用于存储用户实名认证信息
 
     public static Optional<UserSession> getLoginInfoOpt() {
         return Optional.ofNullable(getCurSession(SpringHelper.getCurrentRequest(), true));
