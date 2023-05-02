@@ -2,7 +2,7 @@ package cn.miniants.toolkit;
 
 import java.util.Random;
 
-public class StrUtil {
+public class MiniStrUtil {
     public static String createRandomStr1(int length){
 
         String str = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
