@@ -77,4 +77,8 @@ public class AuthUserDetails implements UserDetails{
     public Object getUserId() {
         return this.userId;
     }
+
+    public List<?> getUsers() {
+        return this.users;
+    }
 }
