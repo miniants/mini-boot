@@ -6,16 +6,26 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class AuthUserDetails implements UserDetails{
 
+    private List<Object> users;
     private String userId;
     private String username;
     private String password;
     private ArrayList<String> roles;
     private String clientId;
 
+    public AuthUserDetails(List<Object> users, String userId, String username, String password, ArrayList<String> roles, String clientId) {
+        this.users = users;
+        this.userId = userId;
+        this.username = username;
+        this.password = password;
+        this.roles = roles;
+        this.clientId = clientId;
+    }
     public AuthUserDetails(String userId, String username, String password, ArrayList<String> roles, String clientId) {
         this.userId = userId;
         this.username = username;
@@ -23,7 +33,6 @@ public class AuthUserDetails implements UserDetails{
         this.roles = roles;
         this.clientId = clientId;
     }
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return this.roles.stream()

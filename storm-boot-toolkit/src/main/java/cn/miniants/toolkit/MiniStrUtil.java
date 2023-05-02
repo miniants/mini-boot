@@ -24,8 +24,11 @@ public class MiniStrUtil {
     }
 
     public static String getOrEmpty(Object obj) {
+        return getOrDefault(obj, "");
+    }
+    public static String getOrDefault(Object obj, String defaultStr) {
         if(null == obj) {
-            return "";
+            return defaultStr;
         }
         if(obj instanceof String) {
             return (String) obj;
