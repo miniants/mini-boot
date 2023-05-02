@@ -5,8 +5,8 @@
  */
 package cn.miniants.framework.autoconfigure;
 
-import cn.miniants.framework.log.IOplogStorageProvider;
-import cn.miniants.framework.log.OplogAspect;
+import cn.miniants.framework.mapper.log.IOplogStorageProvider;
+import cn.miniants.framework.mapper.log.OplogAspect;
 import cn.miniants.framework.advice.MiniControllerResultAdvice;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;

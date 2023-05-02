@@ -3,7 +3,7 @@
  * ------------------------------------------
  * 受知识产权保护，请勿删除版权申明
  */
-package cn.miniants.framework.log;
+package cn.miniants.framework.mapper.log;
 
 /**
  * 爱组搭 http://aizuda.com

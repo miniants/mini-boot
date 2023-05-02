@@ -22,4 +22,15 @@ public class StrUtil {
         return stringBuffer.toString();
 
     }
+
+    public static String getOrEmpty(Object obj) {
+        if(null == obj) {
+            return "";
+        }
+        if(obj instanceof String) {
+            return (String) obj;
+        }else {
+            return obj.toString();
+        }
+    }
 }

@@ -1,4 +1,4 @@
-package cn.miniants.framework.log;
+package cn.miniants.framework.mapper.log;
 
 import org.apache.ibatis.logging.Log;
 /**
