@@ -1,6 +1,5 @@
 package cn.miniants.framework.security;
 
-import cn.hutool.core.util.URLUtil;
 import cn.miniants.framework.web.UserSession;
 import cn.miniants.toolkit.JSONUtil;
 import cn.miniants.toolkit.ThreadLocalUtils;
@@ -12,7 +11,6 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
@@ -36,10 +34,11 @@ public class ServiceAuthFilter implements HandlerInterceptor {
 
             JsonNode jwtObject = JSONUtil.readTree(jwt_credentials_json);
             ThreadLocalUtils.put(JWT_USER_SESSION, UserSession.builder()
-                    .username(null==jwtObject.get("username")?null:jwtObject.get("username").asText())
-                    .authorities(null==jwtObject.get("authorities")?null:jwtObject.get("authorities").asText())
-                    .id(null==jwtObject.get("userId")?null:jwtObject.get("userId").asLong())
-                    .clientId(null==jwtObject.get("clientId")?null:jwtObject.get("clientId").asText())
+                    .originalData(jwtObject).principals(null == jwtObject.get("principals") ? null : jwtObject.get("principals"))
+                    .username(null == jwtObject.get("username") ? null : jwtObject.get("username").asText())
+                    .authorities(null == jwtObject.get("authorities") ? null : jwtObject.get("authorities").asText())
+                    .id(null == jwtObject.get("userId") ? null : jwtObject.get("userId").asLong())
+                    .clientId(null == jwtObject.get("clientId") ? null : jwtObject.get("clientId").asText())
                     .build());
 
         }

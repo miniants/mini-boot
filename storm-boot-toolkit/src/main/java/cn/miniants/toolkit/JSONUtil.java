@@ -29,6 +29,8 @@ import java.lang.reflect.Type;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author guoqianyou
@@ -744,4 +746,37 @@ public class JSONUtil {
         }
     }
 
+
+    public static JsonNode pathReadNestedValue(JsonNode node, String fieldPath) {
+        String[] fields = fieldPath.split("\\.");
+        JsonNode currentNode = node;
+        Pattern arrayPattern = Pattern.compile("(.*)\\[(\\d+)]");
+
+        for (String field : fields) {
+            Matcher matcher = arrayPattern.matcher(field);
+            if (matcher.matches()) {
+                String arrayField = matcher.group(1);
+                int arrayIndex = Integer.parseInt(matcher.group(2));
+
+                if (currentNode != null && currentNode.has(arrayField)) {
+                    currentNode = currentNode.get(arrayField);
+                    if (currentNode.isArray() && currentNode.size() > arrayIndex) {
+                        currentNode = currentNode.get(arrayIndex);
+                    } else {
+                        return null;
+                    }
+                } else {
+                    return null;
+                }
+            } else {
+                if (currentNode != null && currentNode.has(field)) {
+                    currentNode = currentNode.get(field);
+                } else {
+                    return null;
+                }
+            }
+        }
+
+        return currentNode;
+    }
 }
