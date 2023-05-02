@@ -1,5 +1,6 @@
 package cn.miniants.framework.advice;
 
+import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.miniants.framework.api.ApiResult;
 import cn.miniants.framework.exception.MiniFeignException;
@@ -19,7 +20,7 @@ public class MiniFeignErrorDecoder implements ErrorDecoder {
     private final ErrorDecoder defaultErrorDecoder = new Default();
     @Override
     public Exception decode(String methodKey, Response response) {
-        boolean isMiniApi = response.headers().get(HTTP_HEAD_MINI_API).stream().anyMatch(value -> value.contains("true"));
+        boolean isMiniApi = ObjectUtil.isNotNull(response.headers().get(HTTP_HEAD_MINI_API)) && response.headers().get(HTTP_HEAD_MINI_API).stream().anyMatch(value -> value.contains("true"));
 
         // 在这里，您可以根据响应状态码或其他信息自定义异常处理逻辑
         if(isMiniApi) {
