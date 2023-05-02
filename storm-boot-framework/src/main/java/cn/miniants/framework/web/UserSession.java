@@ -8,6 +8,7 @@ package cn.miniants.framework.web;
 import cn.hutool.core.lang.Assert;
 import cn.miniants.framework.token.StormwindToken;
 import cn.miniants.toolkit.JSONUtil;
+import cn.miniants.toolkit.MiniStrUtil;
 import cn.miniants.toolkit.ThreadLocalUtils;
 import com.baomidou.kisso.SSOHelper;
 import com.baomidou.kisso.security.token.SSOToken;
@@ -48,6 +49,10 @@ public class UserSession {
 
     private JsonNode principals; // 用于存储用户实名认证信息
 
+
+    public String pathValue(String fieldPath) {
+        return MiniStrUtil.getOrEmpty(JSONUtil.pathReadNestedValue(originalData, fieldPath));
+    }
     public static Optional<UserSession> getLoginInfoOpt() {
         return Optional.ofNullable(getCurSession(SpringHelper.getCurrentRequest(), true));
     }

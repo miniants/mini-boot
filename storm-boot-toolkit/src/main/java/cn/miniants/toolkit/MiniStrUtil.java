@@ -1,5 +1,7 @@
 package cn.miniants.toolkit;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 import java.util.Random;
 
 public class MiniStrUtil {
@@ -32,6 +34,8 @@ public class MiniStrUtil {
         }
         if(obj instanceof String) {
             return (String) obj;
+        }else if(obj instanceof JsonNode){
+            return ((JsonNode) obj).asText();
         }else {
             return obj.toString();
         }
