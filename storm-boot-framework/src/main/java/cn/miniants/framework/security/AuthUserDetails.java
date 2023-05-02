@@ -11,14 +11,14 @@ import java.util.stream.Collectors;
 
 public class AuthUserDetails implements UserDetails{
 
-    private List<Object> users;
+    private List<?> users;
     private String userId;
     private String username;
     private String password;
     private ArrayList<String> roles;
     private String clientId;
 
-    public AuthUserDetails(List<Object> users, String userId, String username, String password, ArrayList<String> roles, String clientId) {
+    public AuthUserDetails(List<?> users, String userId, String username, String password, ArrayList<String> roles, String clientId) {
         this.users = users;
         this.userId = userId;
         this.username = username;
