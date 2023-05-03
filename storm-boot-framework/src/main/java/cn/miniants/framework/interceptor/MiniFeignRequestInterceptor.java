@@ -25,6 +25,11 @@ public class MiniFeignRequestInterceptor implements RequestInterceptor {
     @Value("${miniants.feign.throw-on-host-miss:false}")
     private boolean throwOnHostMiss = false;
 
+    @Value("${miniants.debug.gateway:}")
+    private String debugGateway = null;
+
+
+
     //    private final String serviceId;
 //
 //    public MiniFeignRequestInterceptor(String serviceId) {
@@ -66,6 +71,14 @@ public class MiniFeignRequestInterceptor implements RequestInterceptor {
                     if (throwOnHostMiss) {
                         throw new RuntimeException("FeignClient未找到目标实例[host:%s]来调用服务:%s".formatted(instanceHost, serviceName));
                     }
+
+                    //如果不跑异常，尝试用网关替代
+                    if (instances.size() > 0 && StrUtil.isNotBlank(debugGateway)) {
+                        String selectServiceUrl = requestTemplate.feignTarget().url().replaceAll(  "[htps]*://[^/]*/", debugGateway);
+                        log.error("----->FeignClient启用网关替代:%s".formatted(selectServiceUrl));
+                        requestTemplate.target(selectServiceUrl);
+                    }
+
                 }
             }
 
