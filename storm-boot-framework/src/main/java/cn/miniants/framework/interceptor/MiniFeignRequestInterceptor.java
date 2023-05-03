@@ -1,10 +1,10 @@
 package cn.miniants.framework.interceptor;
 
 import cn.hutool.core.util.StrUtil;
-import cn.hutool.core.util.URLUtil;
 import com.alibaba.cloud.nacos.discovery.NacosDiscoveryClient;
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -17,6 +17,7 @@ import java.util.List;
 import static cn.miniants.framework.constant.StormwindConstant.GatewayConstants.JWT_CREDENTIALS_HEADER;
 import static cn.miniants.framework.constant.StormwindConstant.GatewayConstants.SERVICE_INSTANCE_HOST;
 
+@Slf4j
 public class MiniFeignRequestInterceptor implements RequestInterceptor {
     @Resource
     private NacosDiscoveryClient nacosDiscoveryClient;
@@ -60,8 +61,12 @@ public class MiniFeignRequestInterceptor implements RequestInterceptor {
                     String selectHostUrl = scheme + "://" + selectedInstance.getHost() + ":" + selectedInstance.getPort() + "/";
                     String selectServiceUrl = requestTemplate.feignTarget().url().replaceAll(scheme + "://[^/]*/", selectHostUrl);
                     requestTemplate.target(selectServiceUrl);
-                } else if(throwOnHostMiss){
-                    throw new RuntimeException("FeignClient未找到目标实例%s来调用服务%s".formatted(instanceHost, serviceName));
+                } else {
+                    if (throwOnHostMiss) {
+                        throw new RuntimeException("FeignClient未找到目标实例[host:%s]来调用服务:%s".formatted(instanceHost, serviceName));
+                    } else {
+                        log.error("=====>FeignClient未找到目标实例[host:%s]来调用服务:%s".formatted(instanceHost, serviceName));
+                    }
                 }
             }
 
