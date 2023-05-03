@@ -74,7 +74,7 @@ public class MiniFeignRequestInterceptor implements RequestInterceptor {
 
                     //如果不跑异常，尝试用网关替代
                     if (instances.size() > 0 && StrUtil.isNotBlank(debugGateway)) {
-                        String selectServiceUrl = requestTemplate.feignTarget().url().replaceAll(  "[htps]*://[^/]*/", debugGateway+serviceName+"/");
+                        String selectServiceUrl = requestTemplate.feignTarget().url().replaceAll(  "[htps]*://", debugGateway);
                         log.error("----->FeignClient启用网关替代:%s".formatted(selectServiceUrl));
                         requestTemplate.target(selectServiceUrl);
                     }
