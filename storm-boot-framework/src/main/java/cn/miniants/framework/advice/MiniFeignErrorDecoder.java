@@ -24,21 +24,23 @@ public class MiniFeignErrorDecoder implements ErrorDecoder {
 
         // 在这里，您可以根据响应状态码或其他信息自定义异常处理逻辑
         if(isMiniApi) {
+            String importMsg = "=====>FeignClient返回异常：%s--->%s:".formatted(response.request().url(),methodKey);
+
             String responseBody;
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(response.body().asInputStream()))) {
                 responseBody = reader.lines().collect(Collectors.joining("\n"));
             } catch (IOException e) {
-                throw new MiniFeignException(-1, "处理FeignClient异常时发生错误");
+                throw new MiniFeignException(-1, importMsg + "读取响应体失败");
             }
 
-            String message = response.reason();
             int code = response.status();
+            String message = response.reason();
             if (StrUtil.isNotBlank(responseBody)) {
                 JsonNode resp = JSONUtil.readTree(responseBody);
                 if (null != resp.get("message")) {
                     message = resp.get("message").asText();
                 }
-                throw new MiniFeignException(code, message);
+                throw new MiniFeignException(code, importMsg + message);
             }
             return defaultErrorDecoder.decode(methodKey, response);
         }
