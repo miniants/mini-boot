@@ -5,23 +5,19 @@
  */
 package cn.miniants.framework.api;
 
-/**
- * 爱组搭 http://aizuda.com
- * ----------------------------------------
- * REST API 错误码
- *
- * @author 青苗
- * @since 2021-10-28
- */
+
 public enum ApiErrorCode implements IErrorCode {
     /**
      * 失败
      */
     FAILED(-1, "操作失败"),
+    WAIT(301, "等待中"),
+
     /**
      * 成功
      */
-    SUCCESS(200, "执行成功");
+    SUCCESS(200,"执行成功");
+
 
     private final long code;
     private final String msg;

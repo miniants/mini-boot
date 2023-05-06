@@ -11,14 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
-/**
- * 爱组搭 http://aizuda.com
- * ----------------------------------------
- * REST API 请求异常类
- *
- * @author 青苗
- * @since 2021-10-28
- */
+
 @Slf4j
 public class ApiException extends RuntimeException {
     /**
