@@ -220,8 +220,9 @@ public class MiniControllerResultAdvice implements ResponseBodyAdvice<Object> {
             IErrorCode errorCode = ((ApiException) e).getErrorCode();
             if (null != errorCode) {
                 res = ApiResult.failed(errorCode);
+            }else {
+                res = ApiResult.failed(e.getMessage());
             }
-            res = ApiResult.failed(e.getMessage());
         } else if (e instanceof ConstraintViolationException) {
             res = ApiResult.failed(this.convertConstraintViolationsToMessage((ConstraintViolationException) e));
         }else if (e instanceof MethodArgumentTypeMismatchException) {
