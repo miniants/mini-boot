@@ -7,6 +7,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class AuthUserDetails implements UserDetails{
@@ -17,21 +18,24 @@ public class AuthUserDetails implements UserDetails{
     private String password;
     private ArrayList<String> roles;
     private String clientId;
+    private Map<String, String> headers;
 
-    public AuthUserDetails(List<?> users, String userId, String username, String password, ArrayList<String> roles, String clientId) {
+    public AuthUserDetails(List<?> users, String userId, String username, String password, ArrayList<String> roles, String clientId, Map<String, String> headers) {
         this.users = users;
         this.userId = userId;
         this.username = username;
         this.password = password;
         this.roles = roles;
         this.clientId = clientId;
+        this.headers = headers;
     }
-    public AuthUserDetails(String userId, String username, String password, ArrayList<String> roles, String clientId) {
+    public AuthUserDetails(String userId, String username, String password, ArrayList<String> roles, String clientId,Map<String, String> headers) {
         this.userId = userId;
         this.username = username;
         this.password = password;
         this.roles = roles;
         this.clientId = clientId;
+        this.headers = headers;
     }
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -80,5 +84,10 @@ public class AuthUserDetails implements UserDetails{
 
     public List<?> getUsers() {
         return this.users;
+    }
+
+    public Map<String, String> getHeaders() {
+
+        return this.headers;
     }
 }
