@@ -121,7 +121,7 @@ public class MiniControllerResultAdvice implements ResponseBodyAdvice<Object> {
      * @param constraintViolationException
      * @return
      */
-    private String convertConstraintViolationsToMessage(ConstraintViolationException constraintViolationException) {
+    private String convertConstraintViolationsToMsg(ConstraintViolationException constraintViolationException) {
         return Optional.ofNullable(constraintViolationException.getConstraintViolations())
                 .filter(constraintViolations -> this.enableValidationMessage)
                 .map(constraintViolations -> constraintViolations.stream().flatMap(constraintViolation -> {
@@ -224,7 +224,7 @@ public class MiniControllerResultAdvice implements ResponseBodyAdvice<Object> {
                 res = ApiResult.failed(e.getMessage());
             }
         } else if (e instanceof ConstraintViolationException) {
-            res = ApiResult.failed(this.convertConstraintViolationsToMessage((ConstraintViolationException) e));
+            res = ApiResult.failed(this.convertConstraintViolationsToMsg((ConstraintViolationException) e));
         }else if (e instanceof MethodArgumentTypeMismatchException) {
             resp.setStatus(301);
             return ApiResult.failed("请求参数错误");
