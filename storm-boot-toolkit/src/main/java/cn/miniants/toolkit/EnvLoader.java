@@ -10,7 +10,7 @@ import java.util.Properties;
 public class EnvLoader {
 
     public static void load() {
-        String activeEnv = System.getProperty("ACTIVE_ENV");
+        String activeEnv = System.getProperty("ACTIVE_NAMESPACE");
         if (activeEnv == null || activeEnv.isEmpty()) {
             try {
                 Properties properties = PropertiesLoaderUtils.loadProperties(new ClassPathResource("dev.env"));
