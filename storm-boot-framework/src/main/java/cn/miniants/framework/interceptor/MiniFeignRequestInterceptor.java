@@ -49,14 +49,18 @@ public class MiniFeignRequestInterceptor implements RequestInterceptor {
 
             // 获取 instance-host HTTP头
             String instanceHost = request.getHeader(SERVICE_INSTANCE_HOST);
+            if (StrUtil.isBlank(instanceHost)) {
+                instanceHost = request.getParameter(SERVICE_INSTANCE_HOST);
+            }
             // 如果存在，将 instance-host 添加到 Feign 请求头中
             if (StrUtil.isNotBlank(instanceHost)) {
                 requestTemplate.header(SERVICE_INSTANCE_HOST, instanceHost);
 
                 String serviceName = requestTemplate.feignTarget().name();
                 List<ServiceInstance> instances = nacosDiscoveryClient.getInstances(serviceName);
+                String finalInstanceHost = instanceHost;
                 ServiceInstance selectedInstance = instances.stream()
-                        .filter(instance -> instanceHost.equals(instance.getHost()))
+                        .filter(instance -> finalInstanceHost.equals(instance.getHost()))
                         .findFirst()
                         .orElse(null);
 
