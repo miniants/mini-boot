@@ -1,6 +1,7 @@
 package cn.miniants.toolkit;
 
 import cn.hutool.core.exceptions.ExceptionUtil;
+import cn.hutool.core.util.ObjUtil;
 import cn.hutool.core.util.StrUtil;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonFactory;
@@ -482,7 +483,16 @@ public class JSONUtil {
             throw ExceptionUtil.wrapRuntime(e);
         }
     }
-
+    public static List<Map<String, ?>> readList(@Nullable JsonNode content) {
+        if (ObjUtil.isEmpty(content)) {
+            return Collections.emptyList();
+        }
+        try {
+            return getObjectMapper().readValue(content.toString(), new TypeReference<List<Map<String, ?>>>(){});
+        } catch (IOException e) {
+            throw ExceptionUtil.wrapRuntime(e);
+        }
+    }
     /**
      * 读取集合
      *

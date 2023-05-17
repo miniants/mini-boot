@@ -20,6 +20,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -47,7 +49,7 @@ public class UserSession {
     private String userPayload;
     private TokenUserType userType;
 
-    private JsonNode principals; // 用于存储用户实名认证信息
+    private List<Map<String, ?>> principals; // 用于存储用户实名认证后又几个user身份的信息
 
 
     public String pathValue(String fieldPath) {
