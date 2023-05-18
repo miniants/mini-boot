@@ -20,6 +20,7 @@ public class EnvLoader {
                 properties.forEach((key, value) -> {
                     if(StrUtil.isNotBlank((String)key) && StrUtil.isNotBlank((String)value)){
                         System.setProperty(key.toString(), value.toString());
+                        log.info("--->{}: {}", key, value);
                     }
                 });
             } catch (IOException e) {
