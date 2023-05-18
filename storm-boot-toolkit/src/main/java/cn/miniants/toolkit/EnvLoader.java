@@ -12,7 +12,7 @@ import java.util.Properties;
 public class EnvLoader {
 
     public static void load() {
-        String activeEnv = System.getProperty("ACTIVE_NAMESPACE");
+        String activeEnv = System.getenv("ACTIVE_NAMESPACE");
         log.info("=========>ACTIVE_NAMESPACE: {}", activeEnv);
         if (activeEnv == null || activeEnv.isEmpty()) {
             try {
