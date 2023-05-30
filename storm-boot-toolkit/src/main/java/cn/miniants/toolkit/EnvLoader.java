@@ -16,7 +16,7 @@ public class EnvLoader {
         log.info("=========>ACTIVE_NAMESPACE: {}", activeEnv);
         if (activeEnv == null || activeEnv.isEmpty()) {
             try {
-                Properties properties = PropertiesLoaderUtils.loadProperties(new ClassPathResource("dev.env"));
+                Properties properties = LinkedProperties.loadProperties(new ClassPathResource("dev.env"));
                 properties.forEach((key, value) -> {
                     if(StrUtil.isNotBlank((String)key) && StrUtil.isNotBlank((String)value)){
                         System.setProperty(key.toString(), value.toString());
