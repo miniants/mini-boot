@@ -252,7 +252,8 @@ public class MiniControllerResultAdvice implements ResponseBodyAdvice<Object> {
         }
 
         if (SpringHelper.isValidationControllerMethod()) {
-            res.setCode(-2);//-2是验证错误码，前端不会弹出ElMessage
+            resp.setStatus(HttpServletResponse.SC_OK);
+            res.setCode(201);//201是验证错误码，前端不会弹出ElMessage
         }
 
         return res;
