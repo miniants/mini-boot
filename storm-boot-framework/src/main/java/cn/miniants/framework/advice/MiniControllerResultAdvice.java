@@ -227,7 +227,7 @@ public class MiniControllerResultAdvice implements ResponseBodyAdvice<Object> {
             res = ApiResult.failed(this.convertConstraintViolationsToMessage((ConstraintViolationException) e));
         }else if (e instanceof MethodArgumentTypeMismatchException) {
             resp.setStatus(301);
-            return ApiResult.failed("请求参数错误");
+            res = ApiResult.failed("请求参数错误");
         }  else if (e instanceof IllegalArgumentException) {
             // 断言异常
             resp.setStatus(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
@@ -242,7 +242,7 @@ public class MiniControllerResultAdvice implements ResponseBodyAdvice<Object> {
             res = ApiResult.failed(e.getMessage());
         } else if (e instanceof MiniFeignException) {
             resp.setStatus(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
-            return ApiResult.failed("Feign调用异常%s".formatted(e.getMessage()));
+            res = ApiResult.failed("Feign调用异常%s".formatted(e.getMessage()));
         } else {
             // 系统内部异常，打印异常栈
             res = ApiResult.failed("Server Error:%s".formatted(e.getMessage()));
