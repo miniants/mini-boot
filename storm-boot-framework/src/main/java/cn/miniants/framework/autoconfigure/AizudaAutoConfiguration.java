@@ -23,7 +23,9 @@ import org.springframework.core.annotation.Order;
  */
 @Lazy
 @Configuration(proxyBeanMethods = false)
-@Import({JsonAutoConfiguration.class, MybatisPlusConfiguration.class, RedisCacheAutoConfiguration.class, RedisLockAutoConfiguration.class, AuthConfiguration.class, MiniFeignConfiguration.class})
+@Import({WebMvcConfig.class,
+        JsonAutoConfiguration.class, MybatisPlusConfiguration.class, RedisCacheAutoConfiguration.class,
+        RedisLockAutoConfiguration.class, AuthConfiguration.class, MiniFeignConfiguration.class})
 @ComponentScan(basePackages = {"cn.miniants.framework.security"})
 public class AizudaAutoConfiguration {
 
