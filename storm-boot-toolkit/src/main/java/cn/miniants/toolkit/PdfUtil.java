@@ -102,7 +102,7 @@ public class PdfUtil {
         out.close();
     }
 
-    public InputStream convertDoc2Pdf(InputStream src) throws IOException, DocumentException {
+    public static InputStream convertDoc2Pdf(InputStream src) throws IOException, DocumentException {
         XWPFDocument document = new XWPFDocument(src);
         List<XWPFParagraph> paragraphs = document.getParagraphs();
         Document pdf = new Document();
