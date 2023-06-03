@@ -9,4 +9,5 @@ dependencies {
     compileOnly 'org.springframework.boot:spring-boot-starter'
     compileOnly 'org.apache.poi:poi'
     compileOnly 'org.apache.poi:poi-ooxml'
+    compileOnly 'org.apache.poi:poi-scratchpad'
 }

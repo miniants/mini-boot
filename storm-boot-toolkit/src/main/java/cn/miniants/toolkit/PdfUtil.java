@@ -2,6 +2,8 @@ package cn.miniants.toolkit;
 
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.PdfWriter;
+import org.apache.poi.hwpf.HWPFDocument;
+import org.apache.poi.poifs.filesystem.FileMagic;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.springframework.stereotype.Component;
@@ -102,27 +104,40 @@ public class PdfUtil {
         out.close();
     }
 
+
     public static InputStream convertDoc2Pdf(InputStream src) throws IOException, DocumentException {
-        XWPFDocument document = new XWPFDocument(src);
-        List<XWPFParagraph> paragraphs = document.getParagraphs();
         Document pdf = new Document();
-
-        // 创建一个 ByteArrayOutputStream
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-
         PdfWriter.getInstance(pdf, baos);
         pdf.open();
-        for (XWPFParagraph paragraph: paragraphs) {
-            Paragraph p = new Paragraph(paragraph.getText());
-            pdf.add(p);
-        }
-        pdf.close();
 
+        src = FileMagic.prepareToCheckMagic(src);
+        FileMagic fm = FileMagic.valueOf(src);
+        if (fm == FileMagic.OOXML) {
+            // OOXML (.docx) 文件
+            XWPFDocument document = new XWPFDocument(src);
+            List<XWPFParagraph> paragraphs = document.getParagraphs();
+            for (XWPFParagraph paragraph : paragraphs) {
+                Paragraph p = new Paragraph(paragraph.getText());
+                pdf.add(p);
+            }
+        } else if (fm == FileMagic.OLE2) {
+            // OLE2 (.doc) 文件
+            HWPFDocument document = new HWPFDocument(src);
+            String text = document.getDocumentText();
+            String[] paragraphs = text.split("\n");
+            for (String paragraphText : paragraphs) {
+                Paragraph p = new Paragraph(paragraphText);
+                pdf.add(p);
+            }
+        }
+
+        pdf.close();
         // 把 ByteArrayOutputStream 转换成 ByteArrayInputStream
         InputStream is = new ByteArrayInputStream(baos.toByteArray());
-
         return is;
     }
+
 
 
 

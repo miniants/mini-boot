@@ -180,6 +180,7 @@ subprojects {
             dependency "org.springdoc:springdoc-openapi-webmvc-core:${springdocVersion}" //swagger文档生成器
             dependency "org.apache.poi:poi:${poiVersion}" //office
             dependency "org.apache.poi:poi-ooxml:${poiVersion}" //office
+            dependency "org.apache.poi:poi-scratchpad:${poiVersion}" //office
 
         }
         imports {
