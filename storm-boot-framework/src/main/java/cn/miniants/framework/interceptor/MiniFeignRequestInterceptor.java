@@ -47,7 +47,7 @@ public class MiniFeignRequestInterceptor implements RequestInterceptor {
             // 获取 token HTTP头
             String jwt = request.getHeader(JWT_TOKEN_HEADER);
             if (StrUtil.isNotBlank(token)) {
-                requestTemplate.header(JWT_TOKEN_HEADER, token);
+                requestTemplate.header(JWT_TOKEN_HEADER, jwt);
             }
 
 
