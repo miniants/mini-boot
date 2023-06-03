@@ -14,8 +14,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
-import static cn.miniants.framework.constant.StormwindConstant.GatewayConstants.JWT_CREDENTIALS_HEADER;
-import static cn.miniants.framework.constant.StormwindConstant.GatewayConstants.SERVICE_INSTANCE_HOST;
+import static cn.miniants.framework.constant.StormwindConstant.GatewayConstants.*;
 
 @Slf4j
 public class MiniFeignRequestInterceptor implements RequestInterceptor {
@@ -44,6 +43,11 @@ public class MiniFeignRequestInterceptor implements RequestInterceptor {
             String token = request.getHeader(JWT_CREDENTIALS_HEADER);
             if (StrUtil.isNotBlank(token)) {
                 requestTemplate.header(JWT_CREDENTIALS_HEADER, token);
+            }
+            // 获取 token HTTP头
+            String jwt = request.getHeader(JWT_TOKEN_HEADER);
+            if (StrUtil.isNotBlank(token)) {
+                requestTemplate.header(JWT_TOKEN_HEADER, token);
             }
 
 
