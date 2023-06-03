@@ -115,7 +115,13 @@ public class PdfUtil {
         FileMagic fm = FileMagic.valueOf(src);
         if (fm == FileMagic.OOXML) {
             // OOXML (.docx) 文件
-            XWPFDocument document = new XWPFDocument(src);
+            XWPFDocument document;
+            try {
+                document = new XWPFDocument(src);
+            }catch (Exception e){
+                throw new RuntimeException("文件格式不正确,请使用docx格式的文件");
+            }
+
             List<XWPFParagraph> paragraphs = document.getParagraphs();
             for (XWPFParagraph paragraph : paragraphs) {
                 Paragraph p = new Paragraph(paragraph.getText());
@@ -123,7 +129,14 @@ public class PdfUtil {
             }
         } else if (fm == FileMagic.OLE2) {
             // OLE2 (.doc) 文件
-            HWPFDocument document = new HWPFDocument(src);
+            HWPFDocument document;
+            try{
+                document = new HWPFDocument(src);
+            }catch (Exception e){
+                throw new RuntimeException("文件格式不正确,请使用doc格式的文件");
+            }
+
+
             String text = document.getDocumentText();
             String[] paragraphs = text.split("\n");
             for (String paragraphText : paragraphs) {
