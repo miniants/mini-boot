@@ -18,6 +18,8 @@ buildscript {
         disruptorVersion = '3.4.4'
         jtsVersion = '1.18.2'
         springdocVersion = '1.6.8'
+        poiVersion= '4.1.2'
+
 
         // 配置 Maven 发布的仓库信息
         myRepoUrl = "http://39.100.225.51:18001/repository/stormwind-public"
@@ -176,6 +178,8 @@ subprojects {
             dependency "com.lmax:disruptor:${disruptorVersion}" //高性能队列
             dependency "org.locationtech.jts:jts-core:${jtsVersion}" //空间分析
             dependency "org.springdoc:springdoc-openapi-webmvc-core:${springdocVersion}" //swagger文档生成器
+            dependency "org.apache.poi:poi:${poiVersion}" //office
+            dependency "org.apache.poi:poi-ooxml:${poiVersion}" //office
 
         }
         imports {

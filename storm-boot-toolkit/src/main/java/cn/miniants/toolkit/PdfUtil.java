@@ -2,11 +2,14 @@ package cn.miniants.toolkit;
 
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.PdfWriter;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.URLEncoder;
+import java.util.List;
 import java.util.stream.Stream;
 
 
@@ -98,6 +101,30 @@ public class PdfUtil {
         out.flush();
         out.close();
     }
+
+    public InputStream convertDoc2Pdf(InputStream src) throws IOException, DocumentException {
+        XWPFDocument document = new XWPFDocument(src);
+        List<XWPFParagraph> paragraphs = document.getParagraphs();
+        Document pdf = new Document();
+
+        // 创建一个 ByteArrayOutputStream
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+        PdfWriter.getInstance(pdf, baos);
+        pdf.open();
+        for (XWPFParagraph paragraph: paragraphs) {
+            Paragraph p = new Paragraph(paragraph.getText());
+            pdf.add(p);
+        }
+        pdf.close();
+
+        // 把 ByteArrayOutputStream 转换成 ByteArrayInputStream
+        InputStream is = new ByteArrayInputStream(baos.toByteArray());
+
+        return is;
+    }
+
+
 
 }
 
