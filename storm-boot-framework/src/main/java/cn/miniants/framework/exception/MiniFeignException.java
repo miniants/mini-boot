@@ -5,10 +5,12 @@ import java.io.StringWriter;
 
 public class MiniFeignException extends RuntimeException{
     private final int errorCode;
+    private final String feignTraceMessage;
 
-    public MiniFeignException(int errorCode,String message) {
+    public MiniFeignException(int errorCode,String message, String feignTraceMessage) {
         super(message);
         this.errorCode = errorCode;
+        this.feignTraceMessage = feignTraceMessage;
     }
 
     public static String getStackTraceAsString(Throwable throwable) {
@@ -19,5 +21,8 @@ public class MiniFeignException extends RuntimeException{
 
     public int getErrorCode() {
         return errorCode;
+    }
+    public String getFeignTraceMessage() {
+        return feignTraceMessage;
     }
 }

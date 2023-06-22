@@ -216,21 +216,26 @@ public class MiniControllerResultAdvice implements ResponseBodyAdvice<Object> {
         ApiResult<Object> res = null;
 
         if (e instanceof ApiException) {
-            // 业务逻辑异常
+            // 业务逻辑异常,这里的异常都使用ApiAssert.assertApi方法抛出
             IErrorCode errorCode = ((ApiException) e).getErrorCode();
             if (null != errorCode) {
                 res = ApiResult.failed(errorCode);
             }else {
                 res = ApiResult.failed(e.getMessage());
             }
+        } else if (e instanceof MiniFeignException) {
+            //这里的异常是MiniFeignDecoder MiniFeignErrorDecoder 抛出的
+            resp.setStatus(((MiniFeignException) e).getErrorCode());
+            res = ApiResult.failed(e.getMessage());
+            res.setErrorDetails(((MiniFeignException) e).getFeignTraceMessage());
         } else if (e instanceof ConstraintViolationException) {
             res = ApiResult.failed(this.convertConstraintViolationsToMessage((ConstraintViolationException) e));
         }else if (e instanceof MethodArgumentTypeMismatchException) {
-            resp.setStatus(301);
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             res = ApiResult.failed("请求参数错误");
         }  else if (e instanceof IllegalArgumentException) {
             // 断言异常
-            resp.setStatus(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             res = ApiResult.failed(e.getMessage());
         } else if (e instanceof NestedServletException) {
             // 参数缺失
@@ -240,9 +245,6 @@ public class MiniControllerResultAdvice implements ResponseBodyAdvice<Object> {
             // 请求参数无法读取
             resp.setStatus(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
             res = ApiResult.failed(e.getMessage());
-        } else if (e instanceof MiniFeignException) {
-            resp.setStatus(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
-            res = ApiResult.failed("Feign调用异常%s".formatted(e.getMessage()));
         } else {
             // 系统内部异常，打印异常栈
             res = ApiResult.failed("Server Error:%s".formatted(e.getMessage()));

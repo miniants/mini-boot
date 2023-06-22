@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import feign.Response;
 import feign.codec.ErrorDecoder;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -18,19 +19,20 @@ import static cn.miniants.framework.constant.StormwindConstant.MiniConstants.HTT
 
 public class MiniFeignErrorDecoder implements ErrorDecoder {
     private final ErrorDecoder defaultErrorDecoder = new Default();
+
     @Override
     public Exception decode(String methodKey, Response response) {
         boolean isMiniApi = ObjectUtil.isNotNull(response.headers().get(HTTP_HEAD_MINI_API)) && response.headers().get(HTTP_HEAD_MINI_API).stream().anyMatch(value -> value.contains("true"));
 
         // 在这里，您可以根据响应状态码或其他信息自定义异常处理逻辑
-        if(isMiniApi) {
-            String importMsg = "=====>FeignClient返回异常：%s--->%s:".formatted(response.request().url(),methodKey);
+        if (isMiniApi) {
+            String importMsg = "=====>FeignClient返回异常：%s--->%s:".formatted(response.request().url(), methodKey);
 
             String responseBody;
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(response.body().asInputStream()))) {
                 responseBody = reader.lines().collect(Collectors.joining("\n"));
             } catch (IOException e) {
-                throw new MiniFeignException(-1, importMsg + "读取响应体失败");
+                throw new MiniFeignException(HttpServletResponse.SC_SERVICE_UNAVAILABLE, "读取响应体失败", importMsg);
             }
 
             int code = response.status();
@@ -40,7 +42,7 @@ public class MiniFeignErrorDecoder implements ErrorDecoder {
                 if (null != resp.get("message")) {
                     message = resp.get("message").asText();
                 }
-                throw new MiniFeignException(code, importMsg + message);
+                throw new MiniFeignException(code, message, importMsg);
             }
             return defaultErrorDecoder.decode(methodKey, response);
         }

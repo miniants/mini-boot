@@ -61,7 +61,7 @@ public class MiniFeignDecoder implements Decoder {
                 return null == apiResponse ? null : apiResponse.getData();
             } catch (Exception e) {
                 log.error("解码FeignClient报文错误，请检查参数及其他配置.", e);
-                throw new MiniFeignException(503, "解码FeignClient报文错误，请检查参数及其他配置，错误：%s".formatted(e.getMessage()));
+                throw new MiniFeignException(503, "解码FeignClient报文错误",e.getMessage());
             }
         }
 
