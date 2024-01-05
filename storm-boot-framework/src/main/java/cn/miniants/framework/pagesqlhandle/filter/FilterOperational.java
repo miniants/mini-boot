@@ -13,6 +13,8 @@ public enum FilterOperational {
     $ge("$ge", "大于等于"),
     $lt("$lt", "小于"),
     $le("$le", "小于等于"),
+
+    $isNull("$isNull", "为空"),
     ;
 
     private String value;

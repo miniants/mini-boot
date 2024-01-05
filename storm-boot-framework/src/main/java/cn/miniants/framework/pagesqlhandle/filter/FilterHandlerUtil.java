@@ -156,6 +156,9 @@ public class FilterHandlerUtil {
             case $le:
                 queryWrapper.le(notEmpty, filterBean.getFiled(), filterBean.getValue());
                 break;
+            case $isNull:
+                queryWrapper.isNull(notEmpty, filterBean.getFiled());
+                break;
         }
     }
 
