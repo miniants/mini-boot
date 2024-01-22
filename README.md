@@ -1,2 +1,4 @@
 # mini-boot
-基于springMVC和Rsql ORM框架的java快速开发框架。
+
+# 发版
+请使用gradle的publish直接可以自动升级版本并发版到私有仓库

@@ -43,6 +43,8 @@ public class UserSession {
 
     private Long id;
     private String username;
+    private String realName;
+    private String nickName;
     private String authorities;
     private String scope;
     private String clientId;

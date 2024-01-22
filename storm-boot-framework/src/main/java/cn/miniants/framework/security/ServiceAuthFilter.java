@@ -36,6 +36,8 @@ public class ServiceAuthFilter implements HandlerInterceptor {
             ThreadLocalUtils.put(JWT_USER_SESSION, UserSession.builder()
                     .originalData(jwtObject).principals(null == jwtObject.get("principals") ? null : JSONUtil.readList(jwtObject.get("principals")))
                     .username(null == jwtObject.get("username") ? null : jwtObject.get("username").asText())
+                    .realName(null == jwtObject.get("realName") ? null : jwtObject.get("realName").asText())
+                    .nickName(null == jwtObject.get("nickName") ? null : jwtObject.get("nickName").asText())
                     .authorities(null == jwtObject.get("authorities") ? null : jwtObject.get("authorities").asText())
                     .id(null == jwtObject.get("userId") ? null : jwtObject.get("userId").asLong())
                     .clientId(null == jwtObject.get("clientId") ? null : jwtObject.get("clientId").asText())
