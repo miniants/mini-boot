@@ -15,7 +15,7 @@ public class BaseLogicEntity extends BaseEntity {
     /**
      * 删除 0、否  时间戳为删除
      */
-    @JsonIgnore
+//    @JsonIgnore
     @TableLogic(value = "false", delval = "now()")
     private Long deleted;
 
