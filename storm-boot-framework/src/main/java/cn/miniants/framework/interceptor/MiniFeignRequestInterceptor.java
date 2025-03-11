@@ -75,17 +75,17 @@ public class MiniFeignRequestInterceptor implements RequestInterceptor {
                     String selectServiceUrl = requestTemplate.feignTarget().url().replaceAll(scheme + "://[^/]*/?", selectHostUrl);
                     requestTemplate.target(selectServiceUrl);
                 } else {
-                    log.error("=====>FeignClient未找到目标实例[host:%s]来调用服务:%s".formatted(instanceHost, serviceName));
+                    log.error("=====>FeignClient未找到目标实例[host:%s]来调用服务:%s，如果不是NAT的服务段，请不要配置VIT中的VITE_PROXY_HEAD_INSTANCE_HOST参数".formatted(instanceHost, serviceName));
                     if (throwOnHostMiss) {
                         throw new RuntimeException("FeignClient未找到目标实例[host:%s]来调用服务:%s".formatted(instanceHost, serviceName));
                     }
-
-                    //如果不跑异常，尝试用网关替代
-                    if (instances.size() > 0 && StrUtil.isNotBlank(debugGateway)) {
-                        String selectServiceUrl = requestTemplate.feignTarget().url().replaceAll(  "[htps]*://", debugGateway);
-                        log.error("----->FeignClient启用网关替代:%s".formatted(selectServiceUrl));
-                        requestTemplate.target(selectServiceUrl);
-                    }
+// 因为自动替代容易
+//                    //如果不跑异常，尝试用网关替代
+//                    if (instances.size() > 0 && StrUtil.isNotBlank(debugGateway)) {
+//                        String selectServiceUrl = requestTemplate.feignTarget().url().replaceAll(  "[htps]*://", debugGateway);
+//                        log.error("----->FeignClient启用网关替代:%s".formatted(selectServiceUrl));
+//                        requestTemplate.target(selectServiceUrl);
+//                    }
 
                 }
             }
