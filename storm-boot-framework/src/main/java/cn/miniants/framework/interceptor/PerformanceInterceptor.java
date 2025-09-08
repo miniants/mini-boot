@@ -1,8 +1,4 @@
-/*
- * 爱组搭 http://aizuda.com 低代码组件化开发平台
- * ------------------------------------------
- * 受知识产权保护，请勿删除版权申明
- */
+
 package cn.miniants.framework.interceptor;
 
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
@@ -24,7 +20,7 @@ import java.sql.Statement;
 import java.util.*;
 
 /**
- * 爱组搭 http://aizuda.com
+
  * ----------------------------------------
  * 性能分析拦截器，用于输出每条 SQL 语句及其执行时间
  *

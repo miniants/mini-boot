@@ -1,8 +1,4 @@
-/*
- * 爱组搭 http://aizuda.com 低代码组件化开发平台
- * ------------------------------------------
- * 受知识产权保护，请勿删除版权申明
- */
+
 package cn.miniants.framework.mapper;
 
 import cn.hutool.core.util.StrUtil;
@@ -19,7 +15,7 @@ import org.apache.ibatis.mapping.SqlSource;
 import java.util.List;
 
 /**
- * 爱组搭 http://aizuda.com
+
  * ----------------------------------------
  * 自定义批量插入方法
  *

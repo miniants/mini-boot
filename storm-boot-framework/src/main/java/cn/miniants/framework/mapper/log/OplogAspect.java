@@ -1,8 +1,4 @@
-/*
- * 爱组搭 http://aizuda.com 低代码组件化开发平台
- * ------------------------------------------
- * 受知识产权保护，请勿删除版权申明
- */
+
 package cn.miniants.framework.mapper.log;
 
 import cn.miniants.framework.spring.SpringHelper;
@@ -11,7 +7,7 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 
 /**
- * 爱组搭 http://aizuda.com
+
  * ----------------------------------------
  * 操作日志拦截切面
  *

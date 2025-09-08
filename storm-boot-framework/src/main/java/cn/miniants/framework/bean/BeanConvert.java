@@ -1,15 +1,11 @@
-/*
- * 爱组搭 http://aizuda.com 低代码组件化开发平台
- * ------------------------------------------
- * 受知识产权保护，请勿删除版权申明
- */
+
 package cn.miniants.framework.bean;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.miniants.framework.exception.ApiException;
 
 /**
- * 爱组搭 http://aizuda.com
+
  * ----------------------------------------
  * 基础实体转换
  *

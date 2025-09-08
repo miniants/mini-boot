@@ -1,8 +1,4 @@
-/*
- * 爱组搭 http://aizuda.com 低代码组件化开发平台
- * ------------------------------------------
- * 受知识产权保护，请勿删除版权申明
- */
+
 package cn.miniants.framework.bean;
 
 import cn.miniants.framework.ApiConstants;
@@ -15,7 +11,7 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 
 /**
- * 爱组搭 http://aizuda.com
+
  * ----------------------------------------
  * 业务框架基础实体
  *

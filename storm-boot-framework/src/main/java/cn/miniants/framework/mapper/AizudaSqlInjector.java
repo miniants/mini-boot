@@ -1,8 +1,4 @@
-/*
- * 爱组搭 http://aizuda.com 低代码组件化开发平台
- * ------------------------------------------
- * 受知识产权保护，请勿删除版权申明
- */
+
 package cn.miniants.framework.mapper;
 
 import com.baomidou.mybatisplus.core.injector.AbstractMethod;
@@ -12,7 +8,7 @@ import com.baomidou.mybatisplus.core.metadata.TableInfo;
 import java.util.List;
 
 /**
- * 爱组搭 http://aizuda.com
+
  * ----------------------------------------
  * 批量插入注入器
  *

@@ -1,8 +1,4 @@
-/*
- * 爱组搭 http://aizuda.com 低代码组件化开发平台
- * ------------------------------------------
- * 受知识产权保护，请勿删除版权申明
- */
+
 package cn.miniants.framework.web;
 
 import cn.hutool.http.HttpStatus;
@@ -24,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 爱组搭 http://aizuda.com
+
  * ----------------------------------------
  * Service Web 相关配置
  *

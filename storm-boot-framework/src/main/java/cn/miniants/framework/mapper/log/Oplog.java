@@ -1,8 +1,4 @@
-/*
- * 爱组搭 http://aizuda.com 低代码组件化开发平台
- * ------------------------------------------
- * 受知识产权保护，请勿删除版权申明
- */
+
 package cn.miniants.framework.mapper.log;
 
 import com.baomidou.kisso.common.IpHelper;
@@ -18,7 +14,7 @@ import java.lang.reflect.Method;
 import java.util.Date;
 
 /**
- * 爱组搭 http://aizuda.com
+
  * ----------------------------------------
  * 操作日志
  *

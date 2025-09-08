@@ -1,8 +1,4 @@
-/*
- * 爱组搭 http://aizuda.com 低代码组件化开发平台
- * ------------------------------------------
- * 受知识产权保护，请勿删除版权申明
- */
+
 package cn.miniants.framework.web;
 
 import cn.hutool.core.lang.Assert;
@@ -28,7 +24,7 @@ import java.util.Optional;
 import static cn.miniants.framework.constant.StormwindConstant.AuthConstants.JWT_USER_SESSION;
 
 /**
- * 爱组搭 http://aizuda.com
+
  * ----------------------------------------
  * 用户会话信息
  *

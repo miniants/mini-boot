@@ -24,8 +24,7 @@ public class PdfUtil {
     /**
      * 将图片转换为PDF文件
      *
-     * @return PDF文件
-     * @throws IOException IO异常
+     * @throws RuntimeException IO异常
      */
     public static void writePdfOutputStream(OutputStream pdfOutputStream, Stream<Image> ims) throws RuntimeException {
         try {

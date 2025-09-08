@@ -1,8 +1,4 @@
-/*
- * 爱组搭 http://aizuda.com 低代码组件化开发平台
- * ------------------------------------------
- * 受知识产权保护，请勿删除版权申明
- */
+
 package cn.miniants.framework.autoconfigure;
 
 import cn.miniants.framework.mapper.log.IOplogStorageProvider;
@@ -14,7 +10,7 @@ import org.springframework.context.annotation.*;
 import org.springframework.core.annotation.Order;
 
 /***
- * 爱组搭 http://aizuda.com
+
  * ----------------------------------------
  * 启动初始化配置
  *

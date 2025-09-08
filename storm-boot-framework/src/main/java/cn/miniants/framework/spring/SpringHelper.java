@@ -1,8 +1,4 @@
-/*
- * 爱组搭 http://aizuda.com 低代码组件化开发平台
- * ------------------------------------------
- * 受知识产权保护，请勿删除版权申明
- */
+
 package cn.miniants.framework.spring;
 
 import cn.miniants.toolkit.ThreadLocalUtils;
@@ -14,7 +10,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * 爱组搭 http://aizuda.com
+
  * ----------------------------------------
  * Spring Boot 相关辅助类
  *

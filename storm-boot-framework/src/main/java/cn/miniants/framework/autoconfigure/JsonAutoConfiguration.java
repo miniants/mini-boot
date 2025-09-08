@@ -1,8 +1,4 @@
-/*
- * 爱组搭 http://aizuda.com 低代码组件化开发平台
- * ------------------------------------------
- * 受知识产权保护，请勿删除版权申明
- */
+
 package cn.miniants.framework.autoconfigure;
 
 import cn.miniants.framework.editors.DoubleEditor;
@@ -33,7 +29,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * 爱组搭 http://aizuda.com
+
  * ----------------------------------------
  * Json 处理相关配置
  *

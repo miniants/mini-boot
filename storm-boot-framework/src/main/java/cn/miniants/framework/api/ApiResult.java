@@ -1,8 +1,4 @@
-/*
- * 爱组搭 http://aizuda.com 低代码组件化开发平台
- * ------------------------------------------
- * 受知识产权保护，请勿删除版权申明
- */
+
 package cn.miniants.framework.api;
 
 import cn.miniants.framework.exception.ApiException;
@@ -14,7 +10,7 @@ import java.io.Serializable;
 import java.util.Optional;
 
 /**
- * 爱组搭 http://aizuda.com
+
  * ----------------------------------------
  * API 返回结果
  *

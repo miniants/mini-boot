@@ -1,16 +1,13 @@
+// ===== root build.gradle (publish ALL subprojects to Maven Central) =====
 buildscript {
     ext {
-        //核心组件版本
-        //spring-boot+spring-cloud+alibaba-cloud版本说明https://github.com/alibaba/spring-cloud-alibaba/wiki/%E7%89%88%E6%9C%AC%E8%AF%B4%E6%98%8E
-        springBootVersion = '2.7.9' //文档说2.6.13，脚手架生成2.7.6
+        // versions
+        springBootVersion = '2.7.9'
         springCloudVersion = '2021.0.1'
         springCloudAlibabaVersion = '2021.0.1.0'
-        gradleReleaseVersion = '3.0.2'
 
-        //组件版本
         lombokVersion = '1.18.26'
         mysqlConnectorVersion = '8.0.32'
-
         mybatisPlusVersion = '3.5.2'
         hutoolVersion = '5.8.15'
         itextpdfVersion = '5.4.2'
@@ -18,170 +15,92 @@ buildscript {
         disruptorVersion = '3.4.4'
         jtsVersion = '1.18.2'
         springdocVersion = '1.6.8'
-        poiVersion= '4.1.2'
+        poiVersion = '4.1.2'
 
-
-        // 配置 Maven 发布的仓库信息
-        myRepoUrl = "http://39.100.225.51:18001/repository/stormwind-public"
         aliRepoUrl = "https://maven.aliyun.com/repository/public"
         gradleRepoUrl = 'https://plugins.gradle.org/m2/'
-
-        myNexusRepoUrl = "http://39.100.225.51:18001/repository/stormwind"
-        myNexusSnapshotsRepoUrl = "http://39.100.225.51:18001/repository/stormwind-snapshot/"
-        myNexusRepoUsername = "guoqianyou"
-        myNexusRepoPassword = "Gqy17949"
     }
-
-    //设置仓库
     repositories {
         mavenLocal()
-        maven {
-            name "USTB"; url myRepoUrl
-            allowInsecureProtocol = true
-            credentials { username myNexusRepoUsername; password myNexusRepoPassword }
-        }
         maven { name "Alibaba"; url aliRepoUrl }
-        maven { name "gradle"; url gradleRepoUrl }
+        maven { name "gradle";  url gradleRepoUrl }
         mavenCentral()
     }
     dependencies {
-        //spring-boot-gradle-plugin,方便版本管理
+        // 如需后面再加 Boot 到“应用模块”，这个 classpath 留着没关系
         classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
-        classpath "net.researchgate:gradle-release:${gradleReleaseVersion}"
         classpath "com.google.cloud.tools:jib-gradle-plugin:3.3.1"
         classpath 'org.yaml:snakeyaml:1.30'
     }
 }
 
 plugins {
-    id 'org.ajoberstar.grgit' version '5.2.0'
+    id 'io.spring.dependency-management' version '1.1.6' apply false
+    id 'com.vanniktech.maven.publish'    version '0.34.0' apply false
 }
 
-println "=====${group}版本信息(gradle.properties)："
-def nextVersion = version.replaceAll(/(\d+)(?!.*\d)/) { Integer.parseInt(it[1]) + 1 }
-println "当前版本：${version}；下个版本：${nextVersion}"
-
-task tagRelease {
-    description = 'Tags the current head with the project\'s version.'
-    doLast {
-        if(version.contains("SNAPSHOT")){
-            println ("当前版本为快照版本，不能tag")
-        }else {
-            grgit.tag.add(name:"v${version}")
-            def properties = new Properties()
-            file('gradle.properties').withInputStream { properties.load(it) }
-            properties.setProperty('version', "${nextVersion}")
-            file('gradle.properties').withOutputStream { properties.store(it, null) }
-            grgit.commit(all:true,message:"This is NewVersion v${nextVersion} Created after Release of ${version}")
-            //grgit.push(all: true);
-            println("=====项目版本升级：")
-            println("新版本：${nextVersion}")
-        }
-    }
-}
-
-task pushToOrigin {
-    description = 'Pushes current branch\'s committed changes to origin repo.'
-    doLast {
-        grgit.push()
-    }
-}
-
-//全局配置,包括root和所有子项目都会继承
 allprojects {
     apply plugin: 'java'
-    apply plugin: 'java-library'
-    apply plugin: 'maven-publish'
-    apply plugin: "net.researchgate.release"
-    apply plugin: 'org.springframework.boot'
+    apply plugin: 'java-library'   // ← 新增这一行
     apply plugin: 'io.spring.dependency-management'
 
+    group = 'cn.miniants'
 
-    group 'cn.miniants'
-    sourceCompatibility = 17
-    targetCompatibility = 17
-
-    tasks.withType(JavaCompile) {
+    java { toolchain { languageVersion = JavaLanguageVersion.of(17) } }
+    tasks.withType(JavaCompile).configureEach {
         options.encoding = 'UTF-8'
         options.compilerArgs << "-parameters"
+        options.release = 17
+    }
+
+    tasks.withType(Javadoc).configureEach {
+        // 这三项分别对应：读取源码、生成文档、HTML charset
+        options.encoding = 'UTF-8'
+        options.addStringOption('docencoding', 'UTF-8')
+        options.addStringOption('charset', 'UTF-8')
+
+        // 可选：关闭严格校验，避免中文注释的奇奇怪怪告警变错误
+        options.addStringOption('Xdoclint:none', '-quiet')
+        failOnError = false
     }
 
     repositories {
         mavenLocal()
-        maven {
-            name "USTB"; url myRepoUrl; allowInsecureProtocol = true
-            credentials { username myNexusRepoUsername; password myNexusRepoPassword }
-        }
         maven { name "Alibaba"; url aliRepoUrl }
         mavenCentral()
     }
+
     dependencies {
         testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.2'
-        testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.2'
+        testRuntimeOnly    'org.junit.jupiter:junit-jupiter-engine:5.9.2'
         implementation "org.projectlombok:lombok:${lombokVersion}"
     }
 
-    // 根据版本号判断是否为快照版本
-    def isSnapshot = project.version.endsWith("-SNAPSHOT")
-    //打包源码
-    task sourcesJar(type: Jar) {
-        from sourceSets.main.allJava
-        archiveClassifier = 'sources'
-    }
-    // 配置发布任务
-    publishing {
-        // 发布的组件信息
-        publications {
-            myPublish(MavenPublication) {
-                versionMapping {
-                    from components.java
-                    artifact sourcesJar
-                    usage('java-api') {
-                        fromResolutionOf('runtimeClasspath')
-                    }
-                    usage('java-runtime') {
-                        fromResolutionResult()
-                    }
-                }
-            }
-        }
-
-        // 发布的仓库信息
-        repositories {
-            maven {
-                allowInsecureProtocol true
-                url isSnapshot ? myNexusSnapshotsRepoUrl : myNexusRepoUrl
-                credentials { username myNexusRepoUsername; password myNexusRepoPassword }
-            }
-        }
-    }
+    test { useJUnitPlatform() }
 }
 
 subprojects {
-    apply plugin: 'org.springframework.boot'
-    apply plugin: 'io.spring.dependency-management'
-
     dependencies {
         annotationProcessor 'org.projectlombok:lombok' //注释处理器
         api 'org.projectlombok:lombok' //引入lombok
         api 'cn.hutool:hutool-all'
         compileOnly 'org.slf4j:slf4j-api'
     }
+    // 统一依赖对齐
     dependencyManagement {
         dependencies {
-            dependency "org.projectlombok:lombok:${lombokVersion}" //lombok
-            dependency "mysql:mysql-connector-java:${mysqlConnectorVersion}" //mysql
-            dependency "com.baomidou:mybatis-plus-boot-starter:${mybatisPlusVersion}"//数据库操作
-            dependency "cn.hutool:hutool-all:${hutoolVersion}" //工具包
-            dependency "com.itextpdf:itextpdf:${itextpdfVersion}" //pdf
-            dependency "com.baomidou:kisso:${kissoVersion}" //单点登录
-            dependency "com.lmax:disruptor:${disruptorVersion}" //高性能队列
-            dependency "org.locationtech.jts:jts-core:${jtsVersion}" //空间分析
-            dependency "org.springdoc:springdoc-openapi-webmvc-core:${springdocVersion}" //swagger文档生成器
-            dependency "org.apache.poi:poi:${poiVersion}" //office
-            dependency "org.apache.poi:poi-ooxml:${poiVersion}" //office
-            dependency "org.apache.poi:poi-scratchpad:${poiVersion}" //office
-
+            dependency "org.projectlombok:lombok:${lombokVersion}"
+            dependency "mysql:mysql-connector-java:${mysqlConnectorVersion}"
+            dependency "com.baomidou:mybatis-plus-boot-starter:${mybatisPlusVersion}"
+            dependency "cn.hutool:hutool-all:${hutoolVersion}"
+            dependency "com.itextpdf:itextpdf:${itextpdfVersion}"
+            dependency "com.baomidou:kisso:${kissoVersion}"
+            dependency "com.lmax:disruptor:${disruptorVersion}"
+            dependency "org.locationtech.jts:jts-core:${jtsVersion}"
+            dependency "org.springdoc:springdoc-openapi-webmvc-core:${springdocVersion}"
+            dependency "org.apache.poi:poi:${poiVersion}"
+            dependency "org.apache.poi:poi-ooxml:${poiVersion}"
+            dependency "org.apache.poi:poi-scratchpad:${poiVersion}"
         }
         imports {
             mavenBom "org.springframework.boot:spring-boot-dependencies:${springBootVersion}"
@@ -190,14 +109,41 @@ subprojects {
         }
     }
 
-}
+    // ★ 给所有子模块启用 Central 发布（不调用 pomFromGradleProperties，避免 final 冲突）
+    apply plugin: "com.vanniktech.maven.publish"
+    apply plugin: 'io.spring.dependency-management'
 
-//release {
-//    failOnCommitNeeded = false
-//    failOnUnversionedFiles = false
-//    scmAdapters = [net.researchgate.release.GitAdapter]
-//    git{
-//        requireBranch.set('master')
-//    }
-//}
-tasks.named('publish').configure(t->t.dependsOn('tagRelease'))
+    mavenPublishing {
+        publishToMavenCentral()
+        // 只发 SNAPSHOT 可先注释掉
+        signAllPublications()
+
+        // 显式 POM，读取 gradle.properties；不改已 final 的属性
+        pom {
+            def gp = providers::gradleProperty
+            name.set(gp("POM_NAME").orElse(project.name))
+            description.set(gp("POM_DESCRIPTION").orElse(""))
+            url.set(gp("POM_URL").orElse(""))
+
+            licenses {
+                license {
+                    name.set(gp("POM_LICENSE_NAME").orElse("Apache-2.0"))
+                    url.set(gp("POM_LICENSE_URL").orElse("https://www.apache.org/licenses/LICENSE-2.0.txt"))
+                    distribution.set(gp("POM_LICENSE_DIST").orElse("repo"))
+                }
+            }
+            scm {
+                url.set(gp("POM_SCM_URL").orElse(""))
+                connection.set(gp("POM_SCM_CONNECTION").orElse(""))
+                developerConnection.set(gp("POM_SCM_DEV_CONNECTION").orElse(""))
+            }
+            developers {
+                developer {
+                    id.set(gp("POM_DEVELOPER_ID").orElse(""))
+                    name.set(gp("POM_DEVELOPER_NAME").orElse(""))
+                    url.set(gp("POM_DEVELOPER_URL").orElse(""))
+                }
+            }
+        }
+    }
+}
