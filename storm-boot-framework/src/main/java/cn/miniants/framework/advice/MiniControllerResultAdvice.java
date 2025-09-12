@@ -8,41 +8,26 @@ import cn.miniants.framework.exception.ApiException;
 import cn.miniants.framework.exception.MiniFeignException;
 import cn.miniants.framework.spring.SpringHelper;
 import cn.miniants.toolkit.JSONUtil;
-import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.security.SignatureException;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.MethodParameter;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
-import org.springframework.web.HttpRequestMethodNotSupportedException;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
-import org.springframework.web.util.NestedServletException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
-import javax.validation.Path;
 import java.lang.reflect.Method;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -57,16 +42,20 @@ import static cn.miniants.framework.constant.StormwindConstant.MiniConstants.HTT
 @Slf4j
 @RestControllerAdvice
 public class MiniControllerResultAdvice implements ResponseBodyAdvice<Object> {
-    /////////////////处理报文响应结构//////////////////////
+    /// //////////////处理报文响应结构//////////////////////
     @Override
     public boolean supports(@NotNull MethodParameter returnType, @NotNull Class converterType) {
-        return !returnType.getMethod().getReturnType().isAssignableFrom(Void.TYPE);
+        // void 返回值不包裹
+        Method m = returnType.getMethod();
+        return m != null && m.getReturnType() != Void.TYPE;
     }
 
+    /// //////////////确保我们所有的RestController返回的结构除了明确使用MiniControllerResult标识skipWrapper的时候都返回ApiResult的结构//////////////////////
     @Override
     public Object beforeBodyWrite(Object body, @NotNull MethodParameter returnType, @NotNull MediaType selectedContentType, @NotNull Class selectedConverterType,
                                   @NotNull ServerHttpRequest request, @NotNull ServerHttpResponse response) {
         //框架的接口都用Mini-Api标识
+        //当前RestControllerAdvice会在controller会写的时候触发，标识这个后，方便框架内FeignClient知道这个是我们服务内的调用
         response.getHeaders().add(HTTP_HEAD_MINI_API, "true");
 
         if (body instanceof ApiResult) {
@@ -90,19 +79,16 @@ public class MiniControllerResultAdvice implements ResponseBodyAdvice<Object> {
     }
 
 
-    /////////////////处理异常报文//////////////////////
+    /// //////////////处理异常报文//////////////////////
     @Value("${spring.validation.message.enable:true}")
     private Boolean enableValidationMessage;
 
     @Value("${miniants.api.returnErrorDetails:true}")
     private Boolean returnErrorDetails;
-    /**
-     * 转换FieldError列表为错误提示信息
-     *
-     * @param fieldErrors
-     * @return
-     */
+
+
     private String convertFiledErrors(List<FieldError> fieldErrors) {
+        // 转换FieldError列表为错误提示信息
         return Optional.ofNullable(fieldErrors)
                 .filter(fieldErrorsInner -> this.enableValidationMessage)
                 .map(fieldErrorsInner -> fieldErrorsInner.stream()
@@ -111,150 +97,97 @@ public class MiniControllerResultAdvice implements ResponseBodyAdvice<Object> {
                 .orElse(null);
     }
 
-    /**
-     * 转换ConstraintViolationException 异常为错误提示信息
-     *
-     * @param constraintViolationException
-     * @return
-     */
     private String convertConstraintViolationsToMessage(ConstraintViolationException constraintViolationException) {
+        //转换ConstraintViolationException 异常为错误提示信息
         return Optional.ofNullable(constraintViolationException.getConstraintViolations())
                 .filter(constraintViolations -> this.enableValidationMessage)
                 .map(constraintViolations -> constraintViolations.stream().flatMap(constraintViolation -> {
                             String path = constraintViolation.getPropertyPath().toString();
-                            StringBuffer errorMessage = new StringBuffer();
-                            errorMessage.append(path.substring(path.lastIndexOf(".") + 1));
-                            errorMessage.append(" ").append(constraintViolation.getMessage());
-                            return Stream.of(errorMessage.toString());
+                            String errorMessage = path.substring(path.lastIndexOf(".") + 1) +
+                                    " " + constraintViolation.getMessage();
+                            return Stream.of(errorMessage);
                         }).collect(Collectors.joining(", "))
                 ).orElse(null);
     }
 
-    private Map<Path, String> convertConstraintViolationsToMap(ConstraintViolationException constraintViolationException) {
-
-        // 获取异常信息
-        Set<ConstraintViolation<?>> constraintViolations = constraintViolationException.getConstraintViolations();
-        // 将异常信息收集到Map，key为校验失败的字段，value为失败原因
-        Map<Path, String> errorPahtMap = constraintViolations.stream().collect(Collectors.toMap(ConstraintViolation::getPropertyPath, ConstraintViolation::getMessage));
-        // 返回校验失败信息
-
-
-        return errorPahtMap;
+    /* ---------- Utils ---------- */
+    private static boolean isClientAbort(Throwable e) {
+        // 统一识别：Tomcat 的 ClientAbortException、HTTP 客户端重置、Broken pipe/Connection reset
+        Throwable root = ExceptionUtil.getRootCause(e);
+        Throwable t = (root != null) ? root : e;
+        String msg = (t.getMessage() == null ? "" : t.getMessage()).toLowerCase();
+        return (t instanceof org.apache.catalina.connector.ClientAbortException)
+                || (t instanceof java.io.EOFException)
+                || msg.contains("broken pipe")
+                || msg.contains("connection reset by peer")
+                || msg.contains("connection reset");
     }
 
-    /**
-     * 不支持的方法
-     *
-     * @param httpServletResponse
-     * @param ex
-     * @return
-     */
-    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
-    public ApiResult<String> httpExceptionHandler(HttpServletResponse httpServletResponse, HttpRequestMethodNotSupportedException ex) {
-        httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        return ApiResult.failed("请求错误：%s".formatted(ex.getMessage()));
-    }
-
-    /**
-     * jwt 校验异常捕获处理
-     *
-     * @return
-     */
-    @ExceptionHandler({MalformedJwtException.class, SignatureException.class})
-    public ApiResult<String> jwtExceptionHandler(HttpServletResponse httpServletResponse, JwtException ex) {
-        httpServletResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        return ApiResult.failed("身份验证失败(token失效)，请重新验证身份!");
-    }
-
-    /**
-     * jwt时间失效异常处理
-     *
-     * @param httpServletResponse
-     * @param exception
-     * @return
-     */
-    @ExceptionHandler(ExpiredJwtException.class)
-    public ApiResult<String> jwtExpiredExceptionHandler(HttpServletResponse httpServletResponse, ExpiredJwtException exception) {
-        httpServletResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        return ApiResult.result(null, 4001, "token无效");
-    }
-
-    /**
-     * BindException 验证异常处理 - form参数（对象参数，没有加 @RequestBody）触发
-     * MethodArgumentNotValidException 验证异常处理 - 在 @RequestBody 上添加 @Validated 处触发
-     * ConstraintViolationException 验证异常处理 - @Validated加在 controller 类上，且在参数列表中直接指定constraints时触发
-     *
-     * @param request {@link HttpServletRequest}
-     * @param e       {@link BindException}
-     * @return
-     */
-    @ExceptionHandler({BindException.class, MethodArgumentNotValidException.class})
-    @ResponseStatus(HttpStatus.OK)
-    @ResponseBody
-    public ApiResult<String> handleBindException(HttpServletRequest request, BindException e) {
-        ApiResult<String> res = ApiResult.failed(this.convertFiledErrors(e.getBindingResult().getFieldErrors()));
-        if (SpringHelper.isValidationControllerMethod()) {
-            res.setCode(-2);//-2是验证错误码，前端不会弹出ElMessage
+    private static Throwable unwrapNested(Throwable e) {
+        if (e instanceof org.springframework.web.util.NestedServletException && e.getCause() != null) {
+            return e.getCause();
         }
-        return res;
+        return e;
     }
 
+    @ExceptionHandler(value = {Exception.class})
+    public ApiResult<Object> handleBadRequest(Exception ex, HttpServletResponse resp, HttpServletRequest req) {
+        // ---- 关键修复 1：unwrap 后优先识别客户端断开/响应已提交 ----
+        Throwable e = unwrapNested(ex);
+        if (resp.isCommitted() || isClientAbort(e)) {
+            if (!resp.isCommitted()) resp.setStatus(204);
+            log.debug("[CLIENT-ABORT] {} {} -> {}", req.getMethod(), req.getRequestURI(), e.getMessage());
+            return null; // 不写 body，不再抛
+        }
 
-    /**
-     * 自定义 REST 业务异常
-     *
-     * @param e    异常类型
-     * @param resp 响应请求
-     * @return
-     */
-    @ExceptionHandler(value = {Throwable.class, IllegalArgumentException.class})
-    public ApiResult<Object> handleBadRequest(Throwable e, HttpServletResponse resp) {
-        ApiResult<Object> res = null;
-
+        ApiResult<Object> res;
+        //------ 业务逻辑异常,这里的异常都使用ApiAssert.assertApi方法抛出---//
         if (e instanceof ApiException) {
-            // 业务逻辑异常,这里的异常都使用ApiAssert.assertApi方法抛出
             IErrorCode errorCode = ((ApiException) e).getErrorCode();
-            if (null != errorCode) {
-                res = ApiResult.failed(errorCode);
-            }else {
-                res = ApiResult.failed(e.getMessage());
+            return null != errorCode ?ApiResult.failed(errorCode):ApiResult.failed(e.getMessage());
+
+        //------ BindException异常处理，里面有个特殊的就是前端数据给后端验证方法来校验数据而不弹出错误---//
+        } else if (e instanceof BindException) {
+            //     * BindException 验证异常处理 - form参数（对象参数，没有加 @RequestBody）触发
+            //     * MethodArgumentNotValidException 验证异常处理 - 在 @RequestBody 上添加 @Validated 处触发 是BindException的子类
+            res = ApiResult.failed(this.convertFiledErrors(((BindException)e).getBindingResult().getFieldErrors()));
+            if (SpringHelper.isValidationControllerMethod()) {
+                //201是验证错误码，前端不会弹出ElMessage,修改为正常的状态码,默认异常code是=-1，request.ts中会弹出异常提示窗
+                resp.setStatus(HttpServletResponse.SC_OK);
+                res.setCode(201);
             }
+            return res;
+
+        //------  鉴权异常处理（25/9/12分析这里应该不会出现这个）---//
+        } else if (e instanceof JwtException) {
+            resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            return ApiResult.result(e, 4001, "token过期或无效");
+
+        //------ FeignClient服务之间调用的框架异常处理---//
         } else if (e instanceof MiniFeignException) {
             //这里的异常是MiniFeignDecoder MiniFeignErrorDecoder 抛出的
             resp.setStatus(((MiniFeignException) e).getErrorCode());
             res = ApiResult.failed(e.getMessage());
             res.setErrorDetails(((MiniFeignException) e).getFeignTraceMessage());
+            return res;
+
+        //------ 参数验证错误---//
         } else if (e instanceof ConstraintViolationException) {
+            //     * ConstraintViolationException 验证异常处理 - @Validated加在 controller 类上，且在参数列表中直接指定constraints时触发
+            // 这里没有设置res.status,默认为200，约束参数异常在apiResult中用-1来处理。
             res = ApiResult.failed(this.convertConstraintViolationsToMessage((ConstraintViolationException) e));
-        }else if (e instanceof MethodArgumentTypeMismatchException) {
-            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            res = ApiResult.failed("请求参数错误");
-        }  else if (e instanceof IllegalArgumentException) {
-            // 断言异常
-            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            res = ApiResult.failed(e.getMessage());
-        } else if (e instanceof NestedServletException) {
-            // 参数缺失
-            resp.setStatus(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
-            res = ApiResult.failed(e.getMessage());
-        } else if (e instanceof HttpMessageNotReadableException) {
-            // 请求参数无法读取
-            resp.setStatus(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
-            res = ApiResult.failed(e.getMessage());
+            return res;
+
+        //------ 其他的异常 ---//
         } else {
             // 系统内部异常，打印异常栈
-            res = ApiResult.failed("Server Error:%s".formatted(e.getMessage()));
             resp.setStatus(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
-            if(returnErrorDetails) res.setErrorDetails(ExceptionUtil.stacktraceToString(e));
-            log.error("Error: handleBadRequest StackTrace : {}", ExceptionUtil.stacktraceToString(e));
+            res = ApiResult.failed("Service Error:%s".formatted(e.getMessage()));
+            if (returnErrorDetails)
+                res.setErrorDetails(ExceptionUtil.stacktraceToString(e));
+            log.error("Service Error: {}", ExceptionUtil.stacktraceToString(e));
+            return res;
         }
-
-        if (SpringHelper.isValidationControllerMethod()) {
-            resp.setStatus(HttpServletResponse.SC_OK);
-            res.setCode(201);//201是验证错误码，前端不会弹出ElMessage
-        }
-
-        return res;
     }
 }
 

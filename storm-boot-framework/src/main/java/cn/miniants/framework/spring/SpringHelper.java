@@ -69,7 +69,7 @@ public class SpringHelper {
     public static boolean isValidationControllerMethod(){
         if(null==ThreadLocalUtils.get(ValidationControllerMethod_TLFLAG))
             return false;
-        return ThreadLocalUtils.get(ValidationControllerMethod_TLFLAG);
+        return Boolean.TRUE.equals(ThreadLocalUtils.get(ValidationControllerMethod_TLFLAG));
     }
 
     public static void setValidationControllerMethod(){

@@ -1,6 +1,13 @@
 # mini-boot
+## 一、发版
 
-## 发版
+### 1.在修订版本并提交
+
+### 2.在根目录执行普白ishToMavenCentral就自动发布到中央仓库了。
+> https://central.sonatype.com/publishing 可以查看发布的组件。
+> 需要人工确认一下正式发布。10-30分钟左右正式发布完成，中央仓库就可以检索到了。
+
+## 二、发版配置
 ### 1.安装gpg（如果是win）
 #### 官方下载：https://gpg4win.org
 #### 直接安装 gpg4win-x.x.x.exe,一路默认
@@ -35,5 +42,3 @@ signingInMemoryKeyPassword=n1985223
 
 #### 将秘钥上传到公开的验证服务器：
 > gpg --keyserver keyserver.ubuntu.com --send-keys 6F4EB4CA3FF8A68A
-
-### 3.在根目录执行普白ishToMavenCentral就自动发布到中央仓库了。

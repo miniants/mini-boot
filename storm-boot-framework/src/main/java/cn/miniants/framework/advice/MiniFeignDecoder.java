@@ -6,7 +6,6 @@ import cn.miniants.framework.exception.MiniFeignException;
 import cn.miniants.toolkit.JSONUtil;
 import feign.Response;
 import feign.codec.Decoder;
-import feign.codec.ErrorDecoder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
@@ -34,7 +33,7 @@ public class MiniFeignDecoder implements Decoder {
 
     @Override
     public Object decode(Response response, Type type) throws IOException {
-        //如果是框架的api都会包装成ApiResult，所以这里需要判断一下
+        //如果是框架的api都会包装成ApiResult，所以这里需要判断一下，正常的包围需要从ApiResult中拆包
         Map<String, Collection<String>> headers = response.headers();
         if (ObjectUtil.isNotNull(response.headers().get(HTTP_HEAD_MINI_API)) && headers.get(HTTP_HEAD_MINI_API).stream().anyMatch(value -> value.contains("true"))
                 && (headers.get("Content-Type").stream().anyMatch(value -> value.contains("text/plain") || value.contains("application/json")))

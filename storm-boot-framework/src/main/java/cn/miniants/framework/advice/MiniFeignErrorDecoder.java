@@ -2,7 +2,6 @@ package cn.miniants.framework.advice;
 
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
-import cn.miniants.framework.api.ApiResult;
 import cn.miniants.framework.exception.MiniFeignException;
 import cn.miniants.toolkit.JSONUtil;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -46,7 +45,6 @@ public class MiniFeignErrorDecoder implements ErrorDecoder {
             }
             return defaultErrorDecoder.decode(methodKey, response);
         }
-
 
         // 对于其他错误，使用默认的ErrorDecoder
         return defaultErrorDecoder.decode(methodKey, response);
