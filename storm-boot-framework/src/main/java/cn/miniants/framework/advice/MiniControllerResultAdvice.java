@@ -146,6 +146,10 @@ public class MiniControllerResultAdvice implements ResponseBodyAdvice<Object> {
             IErrorCode errorCode = ((ApiException) e).getErrorCode();
             return null != errorCode ?ApiResult.failed(errorCode):ApiResult.failed(e.getMessage());
 
+        //------ 业务逻辑异常,这里的异常都使用Assert.assert方法抛出---//
+        }else if(e instanceof IllegalArgumentException) {
+            return ApiResult.failed(e.getMessage());
+
         //------ BindException异常处理，里面有个特殊的就是前端数据给后端验证方法来校验数据而不弹出错误---//
         } else if (e instanceof BindException) {
             //     * BindException 验证异常处理 - form参数（对象参数，没有加 @RequestBody）触发
