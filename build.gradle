@@ -170,12 +170,12 @@ def checkoutMaster = {
 def getAndUpdateVersion = {
     def currentBranch = grgit.branch.current().name
     assert currentBranch == 'master': "当前分支不是 'master' 分支不能发版。"
-    assert curVersion != null: "未检测到版本号"
 
     //获取版本好，并打tag
     def properties = new Properties()
     file('gradle.properties').withInputStream { properties.load(it) }
     curVersion = properties.getProperty('version')
+    assert curVersion != null: "未检测到版本号"
     grgit.tag.add(name: "v${curVersion}")
 
     //升级版本
