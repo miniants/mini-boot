@@ -86,6 +86,42 @@ allprojects {
     }
 
     test { useJUnitPlatform() }
+    //vanniktech 的 gradle-maven-publish-plugin 是一个组合插件
+    //mavenPublishing 是 com.vanniktech.maven.publish 插件提供的一个核心配置块（DSL）
+    //执行 mavenPublishing 后才有相应的task
+    mavenPublishing {
+        publishToMavenCentral()
+        // 只发 SNAPSHOT 可先注释掉
+        signAllPublications()
+
+        // 显式 POM，读取 gradle.properties；不改已 final 的属性
+        pom {
+            def gp = providers::gradleProperty
+            name.set(gp("POM_NAME").orElse(project.name))
+            description.set(gp("POM_DESCRIPTION").orElse(""))
+            url.set(gp("POM_URL").orElse(""))
+
+            licenses {
+                license {
+                    name.set(gp("POM_LICENSE_NAME").orElse("Apache-2.0"))
+                    url.set(gp("POM_LICENSE_URL").orElse("https://www.apache.org/licenses/LICENSE-2.0.txt"))
+                    distribution.set(gp("POM_LICENSE_DIST").orElse("repo"))
+                }
+            }
+            scm {
+                url.set(gp("POM_SCM_URL").orElse(""))
+                connection.set(gp("POM_SCM_CONNECTION").orElse(""))
+                developerConnection.set(gp("POM_SCM_DEV_CONNECTION").orElse(""))
+            }
+            developers {
+                developer {
+                    id.set(gp("POM_DEVELOPER_ID").orElse(""))
+                    name.set(gp("POM_DEVELOPER_NAME").orElse(""))
+                    url.set(gp("POM_DEVELOPER_URL").orElse(""))
+                }
+            }
+        }
+    }
 }
 
 subprojects {
@@ -161,42 +197,7 @@ def tagRelease = {
     return true;
 }
 
-//vanniktech 的 gradle-maven-publish-plugin 是一个组合插件
-//mavenPublishing 是 com.vanniktech.maven.publish 插件提供的一个核心配置块（DSL）
-//执行 mavenPublishing 后才有相应的task
-mavenPublishing {
-    publishToMavenCentral()
-    // 只发 SNAPSHOT 可先注释掉
-    signAllPublications()
 
-    // 显式 POM，读取 gradle.properties；不改已 final 的属性
-    pom {
-        def gp = providers::gradleProperty
-        name.set(gp("POM_NAME").orElse(project.name))
-        description.set(gp("POM_DESCRIPTION").orElse(""))
-        url.set(gp("POM_URL").orElse(""))
-
-        licenses {
-            license {
-                name.set(gp("POM_LICENSE_NAME").orElse("Apache-2.0"))
-                url.set(gp("POM_LICENSE_URL").orElse("https://www.apache.org/licenses/LICENSE-2.0.txt"))
-                distribution.set(gp("POM_LICENSE_DIST").orElse("repo"))
-            }
-        }
-        scm {
-            url.set(gp("POM_SCM_URL").orElse(""))
-            connection.set(gp("POM_SCM_CONNECTION").orElse(""))
-            developerConnection.set(gp("POM_SCM_DEV_CONNECTION").orElse(""))
-        }
-        developers {
-            developer {
-                id.set(gp("POM_DEVELOPER_ID").orElse(""))
-                name.set(gp("POM_DEVELOPER_NAME").orElse(""))
-                url.set(gp("POM_DEVELOPER_URL").orElse(""))
-            }
-        }
-    }
-}
 
 task myPublishToMavenCentralAndUpdateVersion {
     group = '1自己的发版'
