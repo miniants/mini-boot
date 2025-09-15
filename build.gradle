@@ -43,7 +43,7 @@ plugins {
     id 'com.vanniktech.maven.publish'    version '0.34.0' apply false
 }
 //这里的用户账号密码放到系统.gradle/
-System.setProperty('org.ajoberstar.grgit.auth.username', 'MINIBOOT')
+System.setProperty('org.ajoberstar.grgit.auth.username', 'MINIBOOT1')
 System.setProperty('org.ajoberstar.grgit.auth.password', 'CVDvFCc6UvVU7kNw')
 
 allprojects {
