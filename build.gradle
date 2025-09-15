@@ -168,36 +168,30 @@ def checkoutMaster = {
 }
 
 def getAndUpdateVersion = {
-    //获取并升级到下一个版本号
-    def properties = new Properties()
-    file('gradle.properties').withInputStream { properties.load(it) }
-    curVersion = properties.getProperty('version')
-    nextVersion = curVersion.replaceAll(/(\d+)(?!.*\d)/) { Integer.parseInt(it[1]) + 1 }
-    properties.setProperty('version', "${nextVersion}")
-    properties.setProperty('tagVersion', "${curVersion}")
-    file('gradle.properties').withOutputStream { properties.store(it, null) }
-
-    return true
-}
-
-def tagRelease = {
     def currentBranch = grgit.branch.current().name
     assert currentBranch == 'master': "当前分支不是 'master' 分支不能发版。"
     assert curVersion != null: "未检测到版本号"
 
-    //提交代码
+    //获取版本好，并打tag
+    def properties = new Properties()
+    file('gradle.properties').withInputStream { properties.load(it) }
+    curVersion = properties.getProperty('version')
+    grgit.tag.add(name: "v${curVersion}")
+
+    //升级版本
+    nextVersion = curVersion.replaceAll(/(\d+)(?!.*\d)/) { Integer.parseInt(it[1]) + 1 }
+    properties.setProperty('version', "${nextVersion}")
+    properties.setProperty('tagVersion', "${curVersion}")
+    file('gradle.properties').withOutputStream { properties.store(it, null) }
     grgit.add(patterns: ['.'])  // 添加所有更改
     grgit.commit(all: true, message: "NewVersion：v${nextVersion}，TagVersion：${curVersion}")
-    //发版成功后这里先打tag
-    grgit.tag.add(name: "v${curVersion}")
+
     //grgit.push(all: true);
     println("=====项目版本升级：")
     println("新版本：${nextVersion}，Release版本：${curVersion}")
 
-    return true;
+    return true
 }
-
-
 
 task myPublishToMavenCentralAndUpdateVersion {
     group = '1自己的发版'
@@ -206,7 +200,6 @@ task myPublishToMavenCentralAndUpdateVersion {
     }
     doLast {
         getAndUpdateVersion()
-        tagRelease()
         println "发布中央仓库，发布版本:${curVersion}，新开版本:${nextVersion}. 中央仓库需要人工确认发布。https://central.sonatype.com/publishing"
     }
 }
