@@ -148,6 +148,7 @@ public class MiniControllerResultAdvice implements ResponseBodyAdvice<Object> {
 
         //------ 业务逻辑异常,这里的异常都使用Assert.assert方法抛出---//
         }else if(e instanceof IllegalArgumentException) {
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return ApiResult.failed(e.getMessage());
 
         //------ BindException异常处理，里面有个特殊的就是前端数据给后端验证方法来校验数据而不弹出错误---//
