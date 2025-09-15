@@ -191,7 +191,7 @@ def tagRelease = {
     grgit.commit(all: true, message: "NewVersion：v${nextVersion}，TagVersion：${curVersion}")
     //发版成功后这里先打tag
     grgit.tag.add(name: "v${curVersion}")
-    grgit.push(all: true);
+    //grgit.push(all: true);
     println("=====项目版本升级：")
     println("新版本：${nextVersion}，Release版本：${curVersion}")
 
