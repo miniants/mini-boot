@@ -39,18 +39,19 @@ buildscript {
 
 plugins {
     id 'org.ajoberstar.grgit' version '5.2.0'
-    id 'io.spring.dependency-management' version '1.1.6' apply false
-    id 'com.vanniktech.maven.publish'    version '0.34.0' apply false
+    id 'io.spring.dependency-management' version '1.1.6'
+    id 'com.vanniktech.maven.publish'    version '0.34.0'
 }
 //这里的用户账号密码放到系统.gradle/
-System.setProperty('org.ajoberstar.grgit.auth.username', 'MINIBOOT')
-System.setProperty('org.ajoberstar.grgit.auth.password', 'CVDvFCc6UvVU7kNw')
+System.setProperty('org.ajoberstar.grgit.auth.username', GRGIT_USER)
+System.setProperty('org.ajoberstar.grgit.auth.password', GRGIT_PASS)
 
 allprojects {
     apply plugin: 'java'
     apply plugin: 'java-library'   // ← 新增这一行
     apply plugin: "org.ajoberstar.grgit"
     apply plugin: 'io.spring.dependency-management'
+    apply plugin: "com.vanniktech.maven.publish"
 
     group = 'cn.miniants'
 
@@ -116,44 +117,6 @@ subprojects {
             mavenBom "com.alibaba.cloud:spring-cloud-alibaba-dependencies:${springCloudAlibabaVersion}"
         }
     }
-
-    // ★ 给所有子模块启用 Central 发布（不调用 pomFromGradleProperties，避免 final 冲突）
-    apply plugin: "com.vanniktech.maven.publish"
-    apply plugin: 'io.spring.dependency-management'
-
-    mavenPublishing {
-        publishToMavenCentral()
-        // 只发 SNAPSHOT 可先注释掉
-        signAllPublications()
-
-        // 显式 POM，读取 gradle.properties；不改已 final 的属性
-        pom {
-            def gp = providers::gradleProperty
-            name.set(gp("POM_NAME").orElse(project.name))
-            description.set(gp("POM_DESCRIPTION").orElse(""))
-            url.set(gp("POM_URL").orElse(""))
-
-            licenses {
-                license {
-                    name.set(gp("POM_LICENSE_NAME").orElse("Apache-2.0"))
-                    url.set(gp("POM_LICENSE_URL").orElse("https://www.apache.org/licenses/LICENSE-2.0.txt"))
-                    distribution.set(gp("POM_LICENSE_DIST").orElse("repo"))
-                }
-            }
-            scm {
-                url.set(gp("POM_SCM_URL").orElse(""))
-                connection.set(gp("POM_SCM_CONNECTION").orElse(""))
-                developerConnection.set(gp("POM_SCM_DEV_CONNECTION").orElse(""))
-            }
-            developers {
-                developer {
-                    id.set(gp("POM_DEVELOPER_ID").orElse(""))
-                    name.set(gp("POM_DEVELOPER_NAME").orElse(""))
-                    url.set(gp("POM_DEVELOPER_URL").orElse(""))
-                }
-            }
-        }
-    }
 }
 
 def checkoutMaster = {
@@ -198,13 +161,56 @@ def tagRelease = {
     return true;
 }
 
-task myPublishToMavenCentral {
+//vanniktech 的 gradle-maven-publish-plugin 是一个组合插件
+//mavenPublishing 是 com.vanniktech.maven.publish 插件提供的一个核心配置块（DSL）
+//执行 mavenPublishing 后才有相应的task
+mavenPublishing {
+    publishToMavenCentral()
+    // 只发 SNAPSHOT 可先注释掉
+    signAllPublications()
+
+    // 显式 POM，读取 gradle.properties；不改已 final 的属性
+    pom {
+        def gp = providers::gradleProperty
+        name.set(gp("POM_NAME").orElse(project.name))
+        description.set(gp("POM_DESCRIPTION").orElse(""))
+        url.set(gp("POM_URL").orElse(""))
+
+        licenses {
+            license {
+                name.set(gp("POM_LICENSE_NAME").orElse("Apache-2.0"))
+                url.set(gp("POM_LICENSE_URL").orElse("https://www.apache.org/licenses/LICENSE-2.0.txt"))
+                distribution.set(gp("POM_LICENSE_DIST").orElse("repo"))
+            }
+        }
+        scm {
+            url.set(gp("POM_SCM_URL").orElse(""))
+            connection.set(gp("POM_SCM_CONNECTION").orElse(""))
+            developerConnection.set(gp("POM_SCM_DEV_CONNECTION").orElse(""))
+        }
+        developers {
+            developer {
+                id.set(gp("POM_DEVELOPER_ID").orElse(""))
+                name.set(gp("POM_DEVELOPER_NAME").orElse(""))
+                url.set(gp("POM_DEVELOPER_URL").orElse(""))
+            }
+        }
+    }
+}
+
+task myPublishToMavenCentralAndUpdateVersion {
     group = '1自己的发版'
-
-    //dependsOn publishToMavenCentral
-
+    dependsOn publishToMavenCentral
     doLast {
         getAndUpdateVersion()
         tagRelease()
+        println "发布中央仓库，发布版本:${curVersion}，新开版本:${nextVersion}. 中央仓库需要人工确认发布。https://central.sonatype.com/publishing"
+    }
+}
+task myPublishToMavenLocal {
+    group = '1自己的发版'
+    dependsOn publishToMavenLocal
+    doLast {
+        println "发布到本地仓库用于其他项目开发测试，没有提交和发布到中央仓库"
     }
 }

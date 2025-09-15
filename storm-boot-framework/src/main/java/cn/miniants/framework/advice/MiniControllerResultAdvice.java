@@ -135,13 +135,13 @@ public class MiniControllerResultAdvice implements ResponseBodyAdvice<Object> {
         // ---- 关键修复 1：unwrap 后优先识别客户端断开/响应已提交 ----
         Throwable e = unwrapNested(ex);
         if (resp.isCommitted() || isClientAbort(e)) {
-            if (!resp.isCommitted()) resp.setStatus(204);
+            if (!resp.isCommitted()) resp.setStatus(HttpServletResponse.SC_NO_CONTENT);
             log.debug("[CLIENT-ABORT] {} {} -> {}", req.getMethod(), req.getRequestURI(), e.getMessage());
             return null; // 不写 body，不再抛
         }
 
         ApiResult<Object> res;
-        //------ 业务逻辑异常,这里的异常都使用ApiAssert.assertApi方法抛出---//
+        //------ 业务逻辑异常,这里的异常都使用 ApiAssert.assertApi方法抛出,这类异常以200代码返回---//
         if (e instanceof ApiException) {
             IErrorCode errorCode = ((ApiException) e).getErrorCode();
             return null != errorCode ?ApiResult.failed(errorCode):ApiResult.failed(e.getMessage());
@@ -150,6 +150,13 @@ public class MiniControllerResultAdvice implements ResponseBodyAdvice<Object> {
         }else if(e instanceof IllegalArgumentException) {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return ApiResult.failed(e.getMessage());
+
+        //------ 业务逻辑异常, 参数验证错误---//
+        } else if (e instanceof ConstraintViolationException) {
+            //     * ConstraintViolationException 验证异常处理 - @Validated加在 controller 类上，且在参数列表中直接指定constraints时触发
+            // 这里没有设置res.status,默认为200，约束参数异常在apiResult中用-1来处理。
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            return ApiResult.failed(this.convertConstraintViolationsToMessage((ConstraintViolationException) e));
 
         //------ BindException异常处理，里面有个特殊的就是前端数据给后端验证方法来校验数据而不弹出错误---//
         } else if (e instanceof BindException) {
@@ -174,13 +181,6 @@ public class MiniControllerResultAdvice implements ResponseBodyAdvice<Object> {
             resp.setStatus(((MiniFeignException) e).getErrorCode());
             res = ApiResult.failed(e.getMessage());
             res.setErrorDetails(((MiniFeignException) e).getFeignTraceMessage());
-            return res;
-
-        //------ 参数验证错误---//
-        } else if (e instanceof ConstraintViolationException) {
-            //     * ConstraintViolationException 验证异常处理 - @Validated加在 controller 类上，且在参数列表中直接指定constraints时触发
-            // 这里没有设置res.status,默认为200，约束参数异常在apiResult中用-1来处理。
-            res = ApiResult.failed(this.convertConstraintViolationsToMessage((ConstraintViolationException) e));
             return res;
 
         //------ 其他的异常 ---//
