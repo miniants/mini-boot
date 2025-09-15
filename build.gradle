@@ -201,7 +201,9 @@ def tagRelease = {
 
 task myPublishToMavenCentralAndUpdateVersion {
     group = '1自己的发版'
-    dependsOn publishToMavenCentral
+    subprojects.each {prj->
+        dependsOn prj.publishToMavenCentral
+    }
     doLast {
         getAndUpdateVersion()
         tagRelease()
@@ -210,7 +212,9 @@ task myPublishToMavenCentralAndUpdateVersion {
 }
 task myPublishToMavenLocal {
     group = '1自己的发版'
-    dependsOn publishToMavenLocal
+    subprojects.each {prj->
+        dependsOn prj.publishToMavenLocal
+    }
     doLast {
         println "发布到本地仓库用于其他项目开发测试，没有提交和发布到中央仓库"
     }
