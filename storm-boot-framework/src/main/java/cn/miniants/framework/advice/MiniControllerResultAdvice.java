@@ -17,6 +17,7 @@ import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
+import org.springframework.security.oauth2.common.exceptions.OAuth2Exception;
 import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -173,6 +174,10 @@ public class MiniControllerResultAdvice implements ResponseBodyAdvice<Object> {
         } else if (e instanceof JwtException) {
             resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return ApiResult.result(e, 4001, "token过期或无效");
+
+        } else if (e instanceof OAuth2Exception _ex) {
+            resp.setStatus(_ex.getHttpErrorCode());
+            return ApiResult.result(e, _ex.getHttpErrorCode(), _ex.getMessage());
 
         //------ FeignClient服务调用的自己框架异常处理---//
         } else if (e instanceof MiniFeignException) {
