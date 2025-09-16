@@ -80,27 +80,26 @@ public class MiniControllerResultAdvice implements ResponseBodyAdvice<Object> {
 
 
     /// //////////////处理异常报文//////////////////////
-    @Value("${spring.validation.message.enable:true}")
-    private Boolean enableValidationMessage;
+    @ExceptionHandler(value = {Exception.class})
+    public ApiResult<Object> handleException(Exception ex, HttpServletResponse resp, HttpServletRequest req) {
+        return handleBadRequest(ex, resp, req);
+    }
 
-    @Value("${miniants.api.returnErrorDetails:true}")
-    private Boolean returnErrorDetails;
-
-
-    private String convertFiledErrors(List<FieldError> fieldErrors) {
+    /// //////////////内部函数几公共函数//////////////////////
+    private static String convertFiledErrors(List<FieldError> fieldErrors) {
         // 转换FieldError列表为错误提示信息
         return Optional.ofNullable(fieldErrors)
-                .filter(fieldErrorsInner -> this.enableValidationMessage)
+//                .filter(fieldErrorsInner -> enableValidationMessage)
                 .map(fieldErrorsInner -> fieldErrorsInner.stream()
                         .flatMap(fieldError -> Stream.of(fieldError.getField() + " " + fieldError.getDefaultMessage()))
                         .collect(Collectors.joining(", ")))
                 .orElse(null);
     }
 
-    private String convertConstraintViolationsToMessage(ConstraintViolationException constraintViolationException) {
+    private static String convertConstraintViolationsToMessage(ConstraintViolationException constraintViolationException) {
         //转换ConstraintViolationException 异常为错误提示信息
         return Optional.ofNullable(constraintViolationException.getConstraintViolations())
-                .filter(constraintViolations -> this.enableValidationMessage)
+//                .filter(constraintViolations -> enableValidationMessage)
                 .map(constraintViolations -> constraintViolations.stream().flatMap(constraintViolation -> {
                             String path = constraintViolation.getPropertyPath().toString();
                             String errorMessage = path.substring(path.lastIndexOf(".") + 1) +
@@ -130,8 +129,7 @@ public class MiniControllerResultAdvice implements ResponseBodyAdvice<Object> {
         return e;
     }
 
-    @ExceptionHandler(value = {Exception.class})
-    public ApiResult<Object> handleBadRequest(Exception ex, HttpServletResponse resp, HttpServletRequest req) {
+    public static ApiResult<Object> handleBadRequest(Exception ex, HttpServletResponse resp, HttpServletRequest req) {
         // ---- 关键修复 1：unwrap 后优先识别客户端断开/响应已提交 ----
         Throwable e = unwrapNested(ex);
         if (resp.isCommitted() || isClientAbort(e)) {
@@ -156,13 +154,13 @@ public class MiniControllerResultAdvice implements ResponseBodyAdvice<Object> {
             //     * ConstraintViolationException 验证异常处理 - @Validated加在 controller 类上，且在参数列表中直接指定constraints时触发
             // 这里没有设置res.status,默认为200，约束参数异常在apiResult中用-1来处理。
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            return ApiResult.failed(this.convertConstraintViolationsToMessage((ConstraintViolationException) e));
+            return ApiResult.failed(convertConstraintViolationsToMessage((ConstraintViolationException) e));
 
         //------ BindException异常处理，里面有个特殊的就是前端数据给后端验证方法来校验数据而不弹出错误---//
         } else if (e instanceof BindException) {
             //     * BindException 验证异常处理 - form参数（对象参数，没有加 @RequestBody）触发
             //     * MethodArgumentNotValidException 验证异常处理 - 在 @RequestBody 上添加 @Validated 处触发 是BindException的子类
-            res = ApiResult.failed(this.convertFiledErrors(((BindException)e).getBindingResult().getFieldErrors()));
+            res = ApiResult.failed(convertFiledErrors(((BindException)e).getBindingResult().getFieldErrors()));
             if (SpringHelper.isValidationControllerMethod()) {
                 //201是验证错误码，前端不会弹出ElMessage,修改为正常的状态码,默认异常code是=-1，request.ts中会弹出异常提示窗
                 resp.setStatus(HttpServletResponse.SC_OK);
@@ -188,8 +186,6 @@ public class MiniControllerResultAdvice implements ResponseBodyAdvice<Object> {
             // 系统内部异常，打印异常栈
             resp.setStatus(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
             res = ApiResult.failed("Service Error:%s".formatted(e.getMessage()));
-            if (returnErrorDetails)
-                res.setErrorDetails(ExceptionUtil.stacktraceToString(e));
             log.error("Service Error: {}", ExceptionUtil.stacktraceToString(e));
             return res;
         }
