@@ -132,8 +132,8 @@ public class MiniControllerResultAdvice implements ResponseBodyAdvice<Object> {
     public static ApiResult<Object> handleBadRequest(Exception ex, HttpServletResponse resp, HttpServletRequest req) {
         // ---- 关键修复 1：unwrap 后优先识别客户端断开/响应已提交 ----
         Throwable e = unwrapNested(ex);
-        if (resp.isCommitted() || isClientAbort(e)) {
-            if (!resp.isCommitted()) resp.setStatus(HttpServletResponse.SC_NO_CONTENT);
+        if (null == resp || resp.isCommitted() || isClientAbort(e)) {
+            if (null != resp && !resp.isCommitted()) resp.setStatus(HttpServletResponse.SC_NO_CONTENT);
             log.debug("[CLIENT-ABORT] {} {} -> {}", req.getMethod(), req.getRequestURI(), e.getMessage());
             return null; // 不写 body，不再抛
         }
