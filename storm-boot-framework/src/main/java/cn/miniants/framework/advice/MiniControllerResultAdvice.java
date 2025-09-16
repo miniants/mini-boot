@@ -8,6 +8,7 @@ import cn.miniants.framework.exception.ApiException;
 import cn.miniants.framework.exception.MiniFeignException;
 import cn.miniants.framework.spring.SpringHelper;
 import cn.miniants.toolkit.JSONUtil;
+import feign.FeignException;
 import io.jsonwebtoken.JwtException;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
@@ -173,12 +174,18 @@ public class MiniControllerResultAdvice implements ResponseBodyAdvice<Object> {
             resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return ApiResult.result(e, 4001, "token过期或无效");
 
-        //------ FeignClient服务之间调用的框架异常处理---//
+        //------ FeignClient服务调用的自己框架异常处理---//
         } else if (e instanceof MiniFeignException) {
             //这里的异常是MiniFeignDecoder MiniFeignErrorDecoder 抛出的
             resp.setStatus(((MiniFeignException) e).getErrorCode());
             res = ApiResult.failed(e.getMessage());
             res.setErrorDetails(((MiniFeignException) e).getFeignTraceMessage());
+            return res;
+
+        //------ FeignClient服务调用系统框架异常处理---//
+        } else if (e instanceof FeignException) {
+            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            res = ApiResult.failed(e.getMessage());
             return res;
 
         //------ 其他的异常 ---//
