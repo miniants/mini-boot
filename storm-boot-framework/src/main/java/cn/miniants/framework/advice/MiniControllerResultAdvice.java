@@ -170,14 +170,14 @@ public class MiniControllerResultAdvice implements ResponseBodyAdvice<Object> {
             }
             return res;
 
-        //------  鉴权异常处理（25/9/12分析这里应该不会出现这个）---//
-        } else if (e instanceof JwtException) {
-            resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            return ApiResult.result(e, 4001, "token过期或无效");
-
-        } else if (e instanceof OAuth2Exception _ex) {
-            resp.setStatus(_ex.getHttpErrorCode());
-            return ApiResult.result(e, _ex.getHttpErrorCode(), _ex.getMessage());
+//        //------  鉴权异常处理（25/9/12分析这里应该不会出现这个）---//
+//        } else if (e instanceof JwtException) {
+//            resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+//            return ApiResult.result(e, 4001, "token过期或无效");
+//
+//        } else if (e instanceof OAuth2Exception _ex) {
+//            resp.setStatus(_ex.getHttpErrorCode());
+//            return ApiResult.result(e, _ex.getHttpErrorCode(), _ex.getMessage());
 
         //------ FeignClient服务调用的自己框架异常处理---//
         } else if (e instanceof MiniFeignException) {
