@@ -112,6 +112,31 @@ public class MiniControllerResultAdvice implements ResponseBodyAdvice<Object> {
     }
 
     /* ---------- Utils ---------- */
+    
+    /**
+     * 检查OAuth2Exception类是否已加载
+     */
+    private static boolean isOAuth2ExceptionLoaded() {
+        try {
+            Class.forName("org.springframework.security.oauth2.common.exceptions.OAuth2Exception");
+            return true;
+        } catch (ClassNotFoundException e) {
+            return false;
+        }
+    }
+    
+    /**
+     * 检查异常是否为OAuth2Exception实例
+     */
+    private static boolean isOAuth2Exception(Throwable e) {
+        try {
+            Class<?> oAuth2ExceptionClass = Class.forName("org.springframework.security.oauth2.common.exceptions.OAuth2Exception");
+            return oAuth2ExceptionClass.isInstance(e);
+        } catch (ClassNotFoundException ex) {
+            return false;
+        }
+    }
+
     private static boolean isClientAbort(Throwable e) {
         // 统一识别：Tomcat 的 ClientAbortException、HTTP 客户端重置、Broken pipe/Connection reset
         Throwable root = ExceptionUtil.getRootCause(e);
@@ -170,15 +195,6 @@ public class MiniControllerResultAdvice implements ResponseBodyAdvice<Object> {
             }
             return res;
 
-//        //------  鉴权异常处理（25/9/12分析这里应该不会出现这个）---//
-//        } else if (e instanceof JwtException) {
-//            resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-//            return ApiResult.result(e, 4001, "token过期或无效");
-//
-//        } else if (e instanceof OAuth2Exception _ex) {
-//            resp.setStatus(_ex.getHttpErrorCode());
-//            return ApiResult.result(e, _ex.getHttpErrorCode(), _ex.getMessage());
-
         //------ FeignClient服务调用的自己框架异常处理---//
         } else if (e instanceof MiniFeignException) {
             //这里的异常是MiniFeignDecoder MiniFeignErrorDecoder 抛出的
@@ -192,6 +208,17 @@ public class MiniControllerResultAdvice implements ResponseBodyAdvice<Object> {
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             res = ApiResult.failed(e.getMessage());
             return res;
+            
+        //------  鉴权异常处理---//
+        } else if (e instanceof JwtException) {
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            return ApiResult.failed("JWT token 异常");
+
+        //------ OAuth2异常处理（动态检查类是否加载）---//
+        } else if (isOAuth2ExceptionLoaded() && isOAuth2Exception(e)) {
+            OAuth2Exception oAuth2Ex = (OAuth2Exception) e;
+            resp.setStatus(oAuth2Ex.getHttpErrorCode());
+            return ApiResult.failed(oAuth2Ex.getMessage());
 
         //------ 其他的异常 ---//
         } else {
