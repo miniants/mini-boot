@@ -161,18 +161,25 @@ public class MiniControllerResultAdvice implements ResponseBodyAdvice<Object> {
         Throwable e = unwrapNested(ex);
         if (null == resp || resp.isCommitted() || isClientAbort(e)) {
             if (null != resp && !resp.isCommitted()) resp.setStatus(HttpServletResponse.SC_NO_CONTENT);
-            log.debug("[CLIENT-ABORT] {} {} -> {}", req.getMethod(), req.getRequestURI(), e.getMessage());
+            log.warn("[SERVICE-API][CLIENT-ABORT] {} {} -> {}", req.getMethod(), req.getRequestURI(), e.getMessage());
             return null; // 不写 body，不再抛
         }
 
+        String _str = "[SERVICE-API][{}] ip=%-15s xff=%-15s %-6s {} %s".formatted(
+                req.getRemoteAddr(),
+                req.getHeader("X-Forwarded-For"),
+                req.getMethod(),
+                req.getRequestURI());
         ApiResult<Object> res;
         //------ 业务逻辑异常,这里的异常都使用 ApiAssert.assertApi方法抛出,这类异常以200代码返回---//
         if (e instanceof ApiException) {
+            log.warn(_str, "ApiException", e.getMessage());
             IErrorCode errorCode = ((ApiException) e).getErrorCode();
             return null != errorCode ?ApiResult.failed(errorCode):ApiResult.failed(e.getMessage());
 
         //------ 业务逻辑异常,这里的异常都使用Assert.assert方法抛出---//
         }else if(e instanceof IllegalArgumentException) {
+            log.warn(_str, "IllegalArgumentException",e.getMessage());
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return ApiResult.failed(e.getMessage());
 
@@ -180,11 +187,13 @@ public class MiniControllerResultAdvice implements ResponseBodyAdvice<Object> {
         } else if (e instanceof ConstraintViolationException) {
             //     * ConstraintViolationException 验证异常处理 - @Validated加在 controller 类上，且在参数列表中直接指定constraints时触发
             // 这里没有设置res.status,默认为200，约束参数异常在apiResult中用-1来处理。
+            log.warn(_str, "ConstraintViolationException", e.getMessage());
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return ApiResult.failed(convertConstraintViolationsToMessage((ConstraintViolationException) e));
 
         //------ BindException异常处理，里面有个特殊的就是前端数据给后端验证方法来校验数据而不弹出错误---//
         } else if (e instanceof BindException) {
+            log.warn(_str, "BindException",e.getMessage());
             //     * BindException 验证异常处理 - form参数（对象参数，没有加 @RequestBody）触发
             //     * MethodArgumentNotValidException 验证异常处理 - 在 @RequestBody 上添加 @Validated 处触发 是BindException的子类
             res = ApiResult.failed(convertFiledErrors(((BindException)e).getBindingResult().getFieldErrors()));
@@ -197,6 +206,7 @@ public class MiniControllerResultAdvice implements ResponseBodyAdvice<Object> {
 
         //------ FeignClient服务调用的自己框架异常处理---//
         } else if (e instanceof MiniFeignException) {
+            log.warn(_str, "MiniFeignException",e.getMessage());
             //这里的异常是MiniFeignDecoder MiniFeignErrorDecoder 抛出的
             resp.setStatus(((MiniFeignException) e).getErrorCode());
             res = ApiResult.failed(e.getMessage());
@@ -205,23 +215,27 @@ public class MiniControllerResultAdvice implements ResponseBodyAdvice<Object> {
 
         //------ FeignClient服务调用系统框架异常处理---//
         } else if (e instanceof FeignException) {
+            log.warn(_str, "FeignException", e.getMessage());
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             res = ApiResult.failed(e.getMessage());
             return res;
             
         //------  鉴权异常处理---//
         } else if (e instanceof JwtException) {
+            log.warn(_str, "JwtException", e.getMessage());
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return ApiResult.failed("JWT token 异常");
 
         //------ OAuth2异常处理（动态检查类是否加载）---//
         } else if (isOAuth2ExceptionLoaded() && isOAuth2Exception(e)) {
+            log.warn(_str, "OAuth2Exception", e.getMessage());
             OAuth2Exception oAuth2Ex = (OAuth2Exception) e;
             resp.setStatus(oAuth2Ex.getHttpErrorCode());
             return ApiResult.failed(oAuth2Ex.getMessage());
 
         //------ 其他的异常 ---//
         } else {
+            log.warn(_str, "Unknown exception", e.getMessage());
             // 系统内部异常，打印异常栈
             resp.setStatus(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
             res = ApiResult.failed("Service Error:%s".formatted(e.getMessage()));
