@@ -4,14 +4,6 @@ package cn.miniants.framework.bean;
 import cn.hutool.core.bean.BeanUtil;
 import cn.miniants.framework.exception.ApiException;
 
-/**
-
- * ----------------------------------------
- * 基础实体转换
- *
- * @author 青苗
- * @since 2021-10-28
- */
 public interface BeanConvert {
 
     /**

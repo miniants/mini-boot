@@ -19,14 +19,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
-
- * ----------------------------------------
- * Service Web 相关配置
- *
- * @author 青苗
- * @since 2022-02-27
- */
 @Slf4j
 @AllArgsConstructor
 public class ServiceWebMvcConfigurer implements WebMvcConfigurer {

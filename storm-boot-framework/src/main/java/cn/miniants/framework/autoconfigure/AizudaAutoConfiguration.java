@@ -9,14 +9,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.*;
 import org.springframework.core.annotation.Order;
 
-/***
-
- * ----------------------------------------
- * 启动初始化配置
- *
- * @author 青苗
- * @since 2021-10-28
- */
 @Lazy
 @Configuration(proxyBeanMethods = false)
 @Import({WebMvcConfig.class,

@@ -14,14 +14,6 @@ import org.apache.ibatis.mapping.SqlSource;
 
 import java.util.List;
 
-/**
-
- * ----------------------------------------
- * 自定义批量插入方法
- *
- * @author 青苗
- * @since 2021-10-28
- */
 public class InsertBatch extends AbstractMethod {
 
     public InsertBatch(String name) {

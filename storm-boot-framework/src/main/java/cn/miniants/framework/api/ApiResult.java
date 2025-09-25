@@ -9,14 +9,6 @@ import lombok.experimental.Accessors;
 import java.io.Serializable;
 import java.util.Optional;
 
-/**
-
- * ----------------------------------------
- * API 返回结果
- *
- * @author 青苗
- * @since 2021-10-28
- */
 @Getter
 @Setter
 @Accessors(chain = true)

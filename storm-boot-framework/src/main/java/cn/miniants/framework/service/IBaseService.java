@@ -7,14 +7,6 @@ import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.function.Supplier;
 
-/**
-
- * ----------------------------------------
- * 自定义 Service 基类
- *
- * @author 青苗
- * @since 2021-10-28
- */
 public interface IBaseService<T> extends IService<T> {
 
     /**

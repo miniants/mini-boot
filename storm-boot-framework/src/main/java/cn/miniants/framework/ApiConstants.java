@@ -1,14 +1,6 @@
 
 package cn.miniants.framework;
 
-/**
-
- * ----------------------------------------
- * 系统常量
- *
- * @author 青苗
- * @since 2021-10-28
- */
 public interface ApiConstants {
     /**
      * 当前页码

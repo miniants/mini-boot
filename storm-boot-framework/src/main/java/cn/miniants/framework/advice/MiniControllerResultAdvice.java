@@ -35,12 +35,6 @@ import java.util.stream.Stream;
 
 import static cn.miniants.framework.constant.StormwindConstant.MiniConstants.HTTP_HEAD_MINI_API;
 
-/**
- * Service 异常处理
- *
- * @author 青苗
- * @since 2021-09-29
- */
 @Slf4j
 @RestControllerAdvice
 public class MiniControllerResultAdvice implements ResponseBodyAdvice<Object> {

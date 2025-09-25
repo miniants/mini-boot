@@ -9,14 +9,6 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 
-/**
-
- * ----------------------------------------
- * Spring Boot 相关辅助类
- *
- * @author 青苗
- * @since 2021-10-28
- */
 @SuppressWarnings("unused")
 public class SpringHelper {
     private static ApplicationContext APPLICATION_CONTEXT;

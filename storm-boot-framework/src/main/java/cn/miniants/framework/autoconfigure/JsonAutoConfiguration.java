@@ -28,14 +28,6 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-/**
-
- * ----------------------------------------
- * Json 处理相关配置
- *
- * @author 青苗
- * @since 2021-10-28
- */
 @Lazy
 @RestControllerAdvice
 @Configuration(proxyBeanMethods = false)

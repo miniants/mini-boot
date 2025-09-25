@@ -8,14 +8,6 @@ import lombok.Setter;
 import javax.validation.constraints.Positive;
 import java.io.Serializable;
 
-/**
-
- * ----------------------------------------
- * 分页查询参数
- *
- * @author 青苗
- * @since 2021-10-28
- */
 @Getter
 @Setter
 public class PageParam<T> implements Serializable {

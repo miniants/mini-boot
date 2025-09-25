@@ -23,14 +23,6 @@ import java.util.Optional;
 
 import static cn.miniants.framework.constant.StormwindConstant.AuthConstants.JWT_USER_SESSION;
 
-/**
-
- * ----------------------------------------
- * 用户会话信息
- *
- * @author 青苗
- * @since 2021-10-28
- */
 @Getter
 @Setter
 @Builder

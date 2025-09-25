@@ -7,12 +7,6 @@ import cn.miniants.toolkit.EnvLoader;
 import org.springframework.boot.Banner;
 import org.springframework.boot.SpringApplication;
 
-/**
-
- *
- * @author 青苗
- * @since 2021-10-30
- */
 public class Aizuda {
 
     /**

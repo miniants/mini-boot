@@ -10,14 +10,6 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 
-/**
-
- * ----------------------------------------
- * 业务框架基础实体
- *
- * @author 青苗
- * @since 2021-10-28
- */
 @Setter
 @Getter
 public class BaseEntity extends SuperEntity {

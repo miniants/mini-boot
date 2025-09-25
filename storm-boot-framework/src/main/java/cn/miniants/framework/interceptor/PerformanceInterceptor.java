@@ -19,14 +19,6 @@ import java.lang.reflect.Proxy;
 import java.sql.Statement;
 import java.util.*;
 
-/**
-
- * ----------------------------------------
- * 性能分析拦截器，用于输出每条 SQL 语句及其执行时间
- *
- * @author 青苗
- * @since 2021-10-28
- */
 @Slf4j
 @Component
 @Intercepts({@Signature(type = StatementHandler.class, method = "query", args = {Statement.class, ResultHandler.class}),
