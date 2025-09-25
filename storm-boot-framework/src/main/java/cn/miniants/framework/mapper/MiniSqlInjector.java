@@ -21,6 +21,7 @@ public class AizudaSqlInjector extends DefaultSqlInjector {
     public List<AbstractMethod> getMethodList(Class<?> mapperClass, TableInfo tableInfo) {
         List<AbstractMethod> methodList = super.getMethodList(mapperClass, tableInfo);
         methodList.add(new InsertBatch("insertBatch"));
+        methodList.add(new RecoverByIds());
         return methodList;
     }
 }
