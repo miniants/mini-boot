@@ -207,10 +207,10 @@ public class MiniControllerResultAdvice implements ResponseBodyAdvice<Object> {
             res.setErrorDetails(((MiniFeignException) e).getFeignTraceMessage());
             return res;
 
-        //------ FeignClient服务调用系统框架异常处理---//
+        //------ FeignClient服务调用系统框架异常处理,传递上层错误状态码---//
         } else if (e instanceof FeignException) {
             log.warn(_str, "FeignException", e.getMessage());
-            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            resp.setStatus(((FeignException) e).status());
             res = ApiResult.failed(e.getMessage());
             return res;
             
