@@ -180,7 +180,7 @@ public class MiniControllerResultAdvice implements ResponseBodyAdvice<Object> {
 
         //------ Mysql的数据唯一约束---//
         }else if(e instanceof SQLIntegrityConstraintViolationException) {
-            log.warn(_str, "IllegalArgumentException",e.getMessage());
+            log.warn(_str, "SQLIntegrityConstraintViolationException",e.getMessage());
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return ApiResult.failed("数据唯一性检查警告：数据重复!");
 
