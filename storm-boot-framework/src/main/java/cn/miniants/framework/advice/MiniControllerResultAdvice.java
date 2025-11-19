@@ -28,6 +28,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.ConstraintViolationException;
 import java.lang.reflect.Method;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -176,6 +177,12 @@ public class MiniControllerResultAdvice implements ResponseBodyAdvice<Object> {
             log.warn(_str, "IllegalArgumentException",e.getMessage());
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return ApiResult.failed(e.getMessage());
+
+        //------ Mysql的数据唯一约束---//
+        }else if(e instanceof SQLIntegrityConstraintViolationException) {
+            log.warn(_str, "IllegalArgumentException",e.getMessage());
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            return ApiResult.failed("数据唯一性检查警告：数据重复!");
 
         //------ 业务逻辑异常, 参数验证错误---//
         } else if (e instanceof ConstraintViolationException) {
