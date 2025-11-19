@@ -3,7 +3,7 @@
 
 ### 1.在修订版本并提交
 
-### 2.在根目录执行普白ishToMavenCentral就自动发布到中央仓库了。
+### 2.在根目录执行myPublishToMavenCentral就自动发布到中央仓库了。
 > https://central.sonatype.com/publishing 可以查看发布的组件。
 > 需要人工确认一下正式发布。10-30分钟左右正式发布完成，中央仓库就可以检索到了。
 
