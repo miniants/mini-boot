@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.MethodParameter;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.MediaType;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
@@ -179,7 +180,7 @@ public class MiniControllerResultAdvice implements ResponseBodyAdvice<Object> {
             return ApiResult.failed(e.getMessage());
 
         //------ Mysql的数据唯一约束---//
-        }else if(e instanceof SQLIntegrityConstraintViolationException) {
+        }else if(e instanceof SQLIntegrityConstraintViolationException || e instanceof DuplicateKeyException) {
             log.warn(_str, "SQLIntegrityConstraintViolationException",e.getMessage());
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return ApiResult.failed("数据唯一性检查警告：数据重复!");
